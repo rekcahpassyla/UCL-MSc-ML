@@ -1,0 +1,210 @@
+\chapter{Stuff that doesn't belong anywhere at the moment}
+
+
+
+\section{Probabilistic embeddings learnt independently}
+
+\begin{itemize}
+    \item Each modality (images and audio) was learnt from separate co-occurrence data
+    \item Means of the embeddings were examined 
+    \begin{itemize}
+        \item Similarity matrix calculated for means using dot product
+        \item Because dot product is used in the Glove loss
+        \item Then self-correlation between similarity matrix for means is calculated
+        \item To see if there is a structure between seeds - if there is, we expect the self-correlation matrices to look the same between seeds.
+        \item TSNE plots for different seeds to show clustering works fine
+        \item Make figure showing different clusters eg. sports, cats, dogs, and different relationships for different random seeds (stochasticity in learnt embeddings). 
+        \item TSNE seed was set to the same value and that causes the same plot if the input data is the same, therefore if plots are not the same, input data is not the same. 
+    \end{itemize}
+    \item Variances were converted to entropy and examined
+    \begin{itemize}
+        \item Entropies have the same distribution over all seeds (figure)
+        \item Entropies are correlated with frequency: higher entropy (higher variance) corresponds to lower frequency words. (show spearman correlation)
+    \end{itemize}
+\end{itemize}
+
+
+\section{Assorted bits from experimental method}
+\begin{itemize}
+    \item Semi-supervised alignment: 
+    \begin{itemize}
+        \item Openimages dataset with 19996 concepts (x), AudioSet has 526 concepts (y)
+        \item Intersection of 230
+        \item We have co-occurrence data for both datasets
+        \item We will learn 2 sets of embeddings simultaneously, having an aligner network for each
+        that learns $f(x) \approx y$ and $g(y) \approx x$
+        \item Initial idea- Loss comprises the following items:
+        \begin{itemize}
+            \item Glove loss for x and y over all concepts
+            \item Cycle loss for x: $f(g(y)) - x$ and y: $g(f(x)) - y$ over all concepts
+            \item Supervised loss for x: $f(x) - y$ and y: $g(y) - x$ for the intersection of concepts
+        \end{itemize}
+        \item We learn both deterministic and probabilistic embeddings \todo[inline]{Not sure what to do with the deterministic ones}
+        \item For probabilistic embeddings we use an optional additional loss item: Maximum mean discrepancy loss \cite{MMDGretton}, between f(x) with y and g(y) with x,  which provides additional ``pressure" needed to force the distributions to be the same. 
+        \begin{itemize}
+            \item MMD with a characteristic kernel will be 0 if the distributions are the same and certain conditions are met of the embedding space. 
+            \item Use a Gaussian kernel which is characteristic.
+            \item MMD is like infinite moment matching, if a characteristic kernel is used. 
+        \end{itemize} 
+    \end{itemize}
+    \item Convergence is measured by accuracy, which is how well the known mapped concepts map to each other.
+    \item For example, if we take $x$ to be the embedding of ``Cat"  in Openimages, and $f(x)$ to be the mapping of Openimages to AudioSet, then we expect that the nearest neighbour of $f(x)$ should be the embedding of ``Cat" in AudioSet. 
+    \item Use mismatch loss for x: fraction of f(x) whose nearest neighbour is not the corresponding known y, and mismatch loss for y vice versa
+    \item Analysis of results of how the unsupervised concepts (for example the ~19500 concepts that exist in Openimages that don't exist in AudioSet) form structure
+\end{itemize}
+
+
+\begin{itemize}
+    \item Unsupervised alignment
+    \begin{itemize}
+        \item There does not appear to be a single distance metric that works. 
+        \item Using multiple distance metrics just results in divergence which makes sense, because it complicates the loss function surface making the minimum harder to find. 
+        \item Tried 3 GANs and none of them worked: Normal GAN, MAGAN, Wasserstein GAN
+    \end{itemize}
+    \item If writing up why it didn't work:
+    \begin{itemize}
+        \item What was tried and why it was plausible
+        \item How to conclude it didn't work
+        \item Any possible reasons for why
+    \end{itemize}
+\end{itemize}
+
+\section{Alignment}
+
+    \begin{itemize}
+        \item In its simplest form: Learning how to map between 2 vector spaces. Dataset will often have large dimensionality. Compress datasets into a lower-dimensional representation while retaining semantic / structural similarity. 
+        \item Second order isomorphism - \cite{SHEPARD19701} - functional relationships between concept clusters. 
+        \begin{itemize}
+            \item Therefore if there is a ``real-world" connection between some concepts - as evidenced by co-occurrence statistics from different modalities - we should observe the same connection between representations of those concepts, in our case, embeddings. 
+            \item \cite{GOLDSTONE2002295}: The meaning of a concept is highly tied in with its relationships to other concepts within that modality. Similarity relationships between concepts within the same system can therefore be used to translate, or map, between systems. 
+            \item \cite{GOLDSTONE2002295}: Cannot learn concepts singularly; can only understand once an entire system of related concepts has been learnt. \cite{GOLDSTONE2002295} suggests that the conceptual web can be augmented with systems of externally grounded meaning to come up with a system that is better than that using only one. 
+            \item https://www.jstor.org/stable/2108085 - ``translation holism" - systems can only be translated if both systems contain enough similar concepts. If the meaning of a concept depends on that concept's place in the system, and the systems are different, then the meanings in the two systems will be different. 
+            \item \cite{GOLDSTONE2002295} ABSURDIST was an early attempt to find ``correspondence" (their term for alignment) across two systems of concepts. ABSURDIST does not require a one to one mapping between concepts in systems and two concepts correspond if they have equivalent roles in their respective systems.
+            \item ABSURDIST finds concepts that correspond between systems but it does not map these to any external world representation. It also does not attempt to include any hierarchical information, like that a dog is a type of animal. No specific relationships between concepts like is-a, has-a, part-of, used-for, or causality, are captured. 
+            \item However ABSURDIST takes as its only inputs similarity matrices that some external agent (a German-English bilingual human, in the paper's example) has created. 
+            \item ABSURDIST attempts to show that the relationships between parts of a system provide enough information necessary for an observer to translate between two such systems- this is the main point of interest in ABSURDIST. 
+            \item There are no constraints on what the two systems are, or even on the number of concepts present in each system, in order for correspondences to exist. This is analogous to our problem; the two systems represent the modalities (images and audio), and the number of concepts  is quite unbalanced. 
+            \item ABSURDIST found that while within-system relationships are enough to find a translation, this translation can be made more robust to noise by adding external, extrinsic information on correspondences (certain correspondences are weighted with higher values). 
+        \end{itemize}
+    \end{itemize}
+    
+\section{Measures of statistical distance}
+
+\subsubsection{Energy distance}
+
+Energy statistics, as described in \cite{energystatistics}, are measures of distance between statistical observations. They are based on the idea of gravitational potential energy as a function of the distance between two objects. The analogy is that the statistical observations are like large bodies which have a statistical potential energy depending on the statistical distance between them. 
+
+[More on reasoning on why energy statistics are useful from \cite{energystatistics}]
+
+The generic energy statistic for a random sample $\vecx_1, ..., \vecx_n$ and kernel function $k$, where $k$ is a symmetric function of Euclidean distances between the samples, has the following expression:
+
+\begin{equation}
+\label{eq:energystatistic}
+\begin{split}
+U_n = \frac{1}{n(n-1)} \sumin \sum_{j \neq i}^n k(\vecx_i, \vecx_j)
+\end{split}
+\end{equation}
+
+We can see that this looks similar to the MMD expression in (\ref{eq:mmd}). If the MMD is used with a Gaussian kernel, then the MMD is a sum of energy statistics.
+
+The energy statistic used to test for equal distributions as described in \cite{energystatistics} takes the following form. In the below,
+
+\begin{itemize}
+    \item $\vecx_i$ are $m$ samples from one distribution  $X$
+    \item $\vecy_j$ are $n$ samples from the other distribution $Y$
+\end{itemize}
+
+\begin{equation}
+\label{eq:energydistance}
+\begin{split}
+E(X, Y) &= \frac{2}{nm} \sumim \sumjn |\vecx_i - \vecy_j| - \frac{1}{n^2} \sumin \sumjn | \vecx_i - \vec_j| \\
+&- \frac{1}{m^2} \sumim \sumjm |\vecy_i - \vecy_j|
+\end{split}
+\end{equation}
+
+As with MMD, the implementation in the \texttt{torch-two-sample / https://torch-two-sample.readthedocs.io} library \cite{torchtwosample} was used. 
+
+The energy statistic, when used in the loss function even with scaling (multiplying by a large factor), only achieved up to 50\% convergence of alignment. 
+
+\subsubsection{Smoothed graph statistics}
+\cite{torchtwosample} describes the problem of learning rich implicit models, from which we can get samples, but not evaluate their density. The embedding alignment problem can be considered in this class; we have samples from the distributions $f(x)$, $g(y)$, $x$ and $y$ but we do not have access to the probability densities of these models. \cite{torchtwosample} describes that a two-sample distributional test for distributional identity should be a good loss function for learning such an implicit model, as if the loss can decrease to zero, the distributions should be identical. 
+
+However, some of these two-sample tests are not differentiable, and so cannot be used as loss functions in backpropagation frameworks. The authors of \cite{torchtwosample} have implemented smoothed, and therefore differentiable, versions of two such tests, the Friedman-Rafsky and k-nearest-neighbour graph tests. This theory is briefly summarised here and we refer readers to the original paper for much more detail. 
+
+We introduce the following notation, which differs from that in \cite{torchtwosample} to avoid overloading previously defined terms in this document. 
+
+\begin{itemize}
+    \item $P$ is the distribution from which the points $X = \{\vecx_1, ..., \vecx_n \}$ are drawn.
+    \item $Q$ is the distribution from which the points $Y = \{\vecy_1, ..., \vecy_n \}$ are drawn.
+    \item $H(X) = (X, E)$ is the directed graph defined over the vertex set $X = \{\vecx_1, ..., \vecx_n \}$, with edges $E$.
+    \item $J(Y) = (Y, F) $ is the directed graph defined over the vertex set $Y = \{\vecy_1, ..., \vecy_m \}$, with edges $F$. 
+    \item These graphs are weighted with the distance function $d(\vecx, \vecx') = || \vecx - \vecx'||$, and we will denote with $d(e)$ the weight of the edge $e$ using distance function $d$. 
+    \item For a labelling of vertices $\pi: X \rightarrow \{1, 2\}$ and any edge $e$ whose vertices $i$ and $j$ are adjacent, define $\Delta_{\pi}(e)$ to be 1 if $e$'s end points have different labels under the mapping $\pi$. 
+\end{itemize}
+
+The generic framework for the graph tests follows these steps:
+
+\begin{enumerate}
+    \item Let $Z$ be the union of the samples $X$ and $Y$ and let $K(Z)$ be the graph defined over all points. Define a mapping $\pi^* : Z \rightarrow \{1, 2\}$ such that $\pi^*(X) = 1$ and $\pi^*(Y) = 2$.
+    \item Use an algorithm $A$ to choose a subset $U^* = A(K(Z))$ of the edges of $Z$, the idea being that this algorithm should encode some sort of neighbourhood structure.
+    \begin{itemize}
+        \item The Friedman-Rafsky test (CITE) uses the minimum spanning tree of $H(X)$ as the algorithm for selecting the neighbourhood structure $U^*$. 
+
+        \item The k-nearest neighbours test adds an edge $e$ to $U^*$ if the starting point is one of the k nearest neighbours of the end point under the distance measure $d$.
+    \end{itemize}
+    \item The statistic $T_{\pi^*}(U^*) = \sum_{e \in U^*} \Delta_{\pi^*} (e)$ defines how many edges in $U^*$ join points from $X$ and $Y$. 
+    \item If $T_{\pi^*}$ is high, then many edges join points from $X$ and $Y$, and $X$ and $Y$ are highly aligned. When using this statistic as a loss function, the negative of this must be minimised.
+\end{enumerate}
+
+
+In order to use $T_{\pi^*}$ in a loss function with backpropagation, we need to be able to calculate the derivatives $\frac{\partial T}{\partial \vecx_i}$ which normally do not exist. In \cite{torchtwosample} the strategy cited is to smooth these functions to make them continuously differentiable by turning them into expectations of probabilistic models in the exponential family. 
+
+
+We can express the optimal neighbourhood mapping $U^*$ as 
+
+\begin{equation}
+\begin{split}
+U^* &= \argmin{U \subseteq E} \sum_{e \in U} d(e) \spaced{such that} v(U) = 1 \\
+&\spaced{and further define} \vecd \spaced{to be the vector of edge weights} d(e). 
+\end{split}
+\end{equation}
+
+where $v: 2^{|E|} \rightarrow \{0, 1 \}$ is a mapping indicating if the set of edges is valid under the constraints of algorithm $A$, for example if each vertex has $k$ neighbours for the KNN test, or if the set of edges forms a valid set of minimum spanning trees in the Friedman-Rafsky test case. 
+
+The aim is to find a probability distribution over $U$ whose expectation can be used in place of $T_{\pi^*}$. Without proof, we state the result from \cite{torchtwosample} that the following exponential family function suffices:
+
+\begin{equation}
+\label{eq:smoothed}
+\begin{split}
+P(U | \vecd / \lambda) &= \exp\Big[-\sum_{e \in U} d(e) / \lambda - A(-\vecd / \lambda \Big] v(U)
+\end{split}
+\end{equation}
+
+where $\lambda$ is a hyperparameter (the ``temperature parameter") and $A(-\vecd / \lambda)$ is the log-partition function  that normalises the distribution. $U^*$ is thus a maximum a posteriori configuration for $P(U | \vecd/\lambda)$, and as $\lambda$ tends to 0,  $P(U | \vecd/\lambda)$ will tend to the MAP estimate. 
+
+If we use the expectation $E_{U}[T_{\pi^*}(U)]$ in place of the original statistic $T_{\pi^*(U^*)}$, since $P(U)$ (\ref{eq:smoothed}) is a member of the exponential family, we can compute its first and second moments, which lead to the values of the smoothed statistic as well as its derivative.  [Add more details]
+
+The PyTorch implementations in the \texttt{torch-two-sample} library  were used. The following were observed:
+
+\begin{itemize}
+    \item For $\lambda$ hyperparameter values of 0.01, the smoothed FR statistic converged to accuracy of about 60\%. 
+    \item For hyperparameter values of 0.1, 1, and 5, the smoothed FR statistic simply diverged with increasing numbers of epochs and accuracy was at most 2\%.  , 
+    \item For $\lambda$ hyperparameter values of 0.01, 0.1, 1, and 5, smoothed 1-NN was used. The KNN statistic decreased but accuracy never went above 2\%.
+\end{itemize}
+
+%It is surprising that these graph-based losses did not work at all in terms of aligning the embeddings using the intersection of concepts. The hypothesis was that loss functions based on graph structure should prove useful in picking out second-order isomorphisms as previously stated. 
+
+    
+\section{Results}
+\begin{itemize}
+    \item Convergence means asymptotically small glove loss, cycle loss, supervised loss
+    \item Also accuracy of alignment higher than 97\%
+    \item Had to be scaled- MMD loss multiplied by factor 1, caused convergence to 50\% alignment and then divergence down to 0.
+    \item Multiplied by 10 had the same behaviour, convergence to 60\% alignment then divergence
+    \item As the objective of this experiment is to achieve alignment, the partially-aligned situations were not investigated. This could be a possibility for further investigation, perhaps in terms of mixing with another metric to see if this improved convergence. 
+    \item Scaled MMD converged fast to within 30 epochs, but we ran to 50 epochs anyway
+    \item However, 
+    \item Therefore regularisation was applied to reduce the weights of the aligner MLP 
+    \item As the regularisation parameter is increased, TSNE plots of the intersection of concepts + top 200, show that the points get "mixed" more and more. 
+    \item Second set of experiments run with MMD = 100, 100 epochs and regularisations. Observed that the maximum mean accuracy (of both x and y) was some time before 100 epochs, and then it started to decrease again, so the embeddings were saved if the mean accuracy was greater than that averaged over the previous epoch. This was not necessary for the MMD 500 case because in the MMD 500 case, it decreased to the asymptote. 
+\end{itemize}

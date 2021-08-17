@@ -1,0 +1,86 @@
+\documentclass[12pt]{report}
+% had to change latex compiler to XeLatex to get this to work- used to be pdfLatex
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+%\usepackage{subfigure}
+
+\pagestyle{plain}
+\usepackage{amssymb,graphicx,color}
+\usepackage{amsfonts}
+\usepackage{float}
+\usepackage{latexsym}
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tabulary}
+
+%\usepackage[
+%backend=biber,
+%style=acm,
+%citestyle=acm
+%]{biblatex}
+%\addbibresource{refs.bib}
+
+%\usepackage[
+%style{acm}
+%]{biblatex}
+%\addbibresource{refs.bib}
+
+\usepackage{biblatex}
+\addbibresource{refs.bib}
+
+\usepackage{todonotes}
+\input{defs.tex}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\title{  	{ \includegraphics[scale=.5]{ucl_logo.png}}\\
+{{\Huge Semi-supervised Learning Of Jointly Aligned Concept Embeddings}}\\
+{\large There Is No Optional Subtitle Yet}\\
+		}
+\date{Submission date: Day Month Year}
+\author{Petra Chong\thanks{
+{\bf Disclaimer:}
+This report is submitted as part requirement for the MY DEGREE at UCL. It is
+substantially the result of my own work except where explicitly indicated in the text.
+The report may be freely copied and distributed provided the source is explicitly acknowledged.
+}
+\\ \\
+MSc Machine Learning\\ \\
+Professor Bradley Love}
+
+%\begin{document}
+ 
+\onehalfspacing
+\maketitle
+\begin{abstract}
+Summarise your report concisely.
+\end{abstract}
+
+
+\tableofcontents
+\setcounter{page}{1}
+
+\input{0_todo.tex}
+
+\input{1_intro.tex}
+
+\input{2_litreview.tex}
+
+\input{3_method.tex}
+
+\input{4_results.tex}
+
+\input{5_conclusions_further}
+
+%\input{xxx_notes}
+
+\appendix
+
+
+%\bibliographystyle{apalike}
+%\bibliography{refs}
+
+\printbibliography
+
+\end{document}

@@ -1,0 +1,69 @@
+\chapter{Further discussion and conclusions}
+
+\todo[inline]{Brief summary of everything so far, suggestions for future work. }
+
+\section{Summary of results}
+
+\subsection{Restatement of project aims}
+
+\begin{itemize}
+    \item Learn independent probabilistic embeddings (represented by multidimensional Gaussian distributions with diagonal covariance matrix) for concepts in the Open Images and AudioSet domains.
+    \item Investigate the quality of these embeddings and whether any insights can be gained from the variances.
+    \item Learn jointly aligned probabilistic embeddings for concepts in the Open Images and AudioSet domains, in a semi-supervised way (marking the known correspondences between datasets). 
+    \item Investigate the quality of the aligned embeddings compared to the independently learned embeddings. 
+\end{itemize}
+
+\subsection{Probabilistic embeddings}
+
+\begin{itemize}
+    \item The variances of the probabilistic embeddings, when expressed as entropies,  correlate negatively with co-occurrence frequency. Concepts which occur less frequently in the input data have a higher variance. 
+    \item The means of the probabilistic embeddings represent sensible clusters when viewed through t-SNE dimensionality reduction. 
+    \item Qualitatively, items in the concept hierarchy that represent very abstract concepts from the point of view of the hierarchy (``Cat", ``Dog") have nearest neighbours that are not very well clustered (show example). Items that are more specific (``Domestic short-haired cat")  have nearest neighbours that are more sensible (also show example). 
+\end{itemize}
+
+\subsection{Semi-supervised learning of aligned embeddings}
+
+\begin{itemize}
+    \item Our algorithm successfully learned jointly aligned embeddings from two modalities, OpenImages containing 19996 concepts and AudioSet containing 526 concepts, with an intersection of 230 concepts. No post-processing of the learned embeddings was necessary for alignment. 
+    \item The 230 intersecting concepts were used as semi-supervised input into the algorithm; 230 concept instances were known to correspond.
+    \item Alignment accuracy of more than 95\% was obtained between the two domains, for the intersecting concepts.
+    \item However convergence to this level of accuracy while still maintaining sensible clustering (avoiding the degenerate case displayed in figure \ref{fig:dysfunctional_cluster} required the following:
+    \begin{itemize}
+        \item 10 samples per embedding in the mini-batch be used in each training step. This probably acts like data augmentation. 
+        \item GloVe loss to be scaled by the ratio of concepts; since Open Images had 19996 concepts and AudioSet 526, GloVe loss for Open Images was multiplied by 19996 / 526. The cause of this requirement has not been investigated. 
+        \item The criterion for saving the embeddings was when the mean alignment accuracy (of both OpenImages and AudioSet embeddings) was the lowest. Knowing that the independently learned probabilistic embeddings for AudioSet required more epochs of training to converge than the similar case of Open Images, it is possible that the point of greatest alignment accuracy for AudioSet is at a different epoch than for Open Images. 
+    \end{itemize}
+    \item The usage of the empirical MMD statistic as a loss function increased alignment accuracy for both domains.
+    \item Embedding quality as measured by Spearman correlation of embedding pair similarity and WordNet similarity was greater for the aligned Open Images embeddings than the independently learned Open Images embeddings.
+    \item Embedding quality by the same metric was decreased for the aligned AudioSet embeddings compared to the independently learned AudioSet embeddings. 
+    \item The MMD statistic increased embedding quality as measured by the Spearman correlation metric for both Open Images and AudioSet domains, compared to the case of not using the MMD statistic. 
+\end{itemize}
+
+\section{Further directions}
+
+\begin{itemize}
+    \item Reduce the proportion of concept intersections used from 230 to 0 gradually?
+    \item Investigate if the highly imbalanced dataset (19996 concepts in Open Images vs 526 in AudioSet) causes other issues; already came across one, which was that the GloVe loss needed to be scaled to achieve good convergence. 
+    \item The highly non-overlapping concept sets mean that there are many concepts present in Open Images that are not exactly present in AudioSet.
+    \item However, the Open Images concepts are actually at many levels of hierarchy. For example there are many different types of cat (Malayan cat, Tabby cat, Siamese cat) and many different types of bread. Thus many of these may actually map to a single concept in AudioSet. 
+    \item Use hierarchical embeddings (Poincare embeddings for example). It is clear that there are clusters of concepts, and preserving the structure between these clusters is desirable. For example, there are many different types and hierarchies of cats and dogs represented in the Open Images dataset, but only a few concepts in this hierarchy in AudioSet. The obvious modification to make would be to align the parent concepts for example ``Cat" and ``Dog" as a first pass, and then to attempt to align the subclasses around those anchor concepts. 
+    \item An obvious limitation of using Open Images and AudioSet is that there are many aural concepts that do not have a visual representation. 
+    \item Better results may perhaps be obtained by trying to align embeddings derived from Open Images and text, but then we would have to resolve the following technical problems
+    \begin{itemize}
+        \item How to resolve words to the Open Images namespace; one such possibility was used when running similarity comparisons with WordNet, described in the previous chapter. 
+        \item How to extract not just single words but phrases from the text, for example ``domestic short-haired cat"
+    \end{itemize}
+\end{itemize}
+
+\subsection{Unsupervised learning of aligned embeddings}
+\begin{itemize}
+    \item To truly mimic human learning, the ultimate aim is to learn aligned embeddings in a completely unsupervised fashion. 
+    \item In this situation, the concept universes for both domains are known, as are the items in the intersection.
+    \item However the specific embeddings in the intersection in each domain would not be directly mapped in the losses during learning. Aggregate statistics of the domain intersection might be used, such as the MMD.
+    \item Preliminary work was unable to produce accuracies greater than 1\% for totally unsupervised alignment, using the same configuration as the semi-supervised case, only excluding the distance loss that related $||f(x) - y||$ and $||g(y) - x||$, even when run to high numbers of epochs. 
+    \item MMD and other distribution similarity measures from \cite{torchtwosample} were tried.
+    \item Further preliminary work also tested the Manifold Alignment GAN (\cite{magan}) and the Wasserstein GAN (\cite{WassersteinGAN}). Neither of these produced any feasible alignment. Mode collapse (all concepts mapping to the same embedding) was at first an issue, but even after using the minibatch discrimination technique \todo[inline]{CITE}, no feasible alignment was found. 
+    \item Since GANs do well on problems where the input data fall into specific discernible classes, and our dataset does not have this characteristic (though there are discernible classes, they are indistinct as befits a human taxonomy of concepts rather than visual representations of 10 digits, or works by different artists), it is reasonable that a naive GAN might not work. 
+    
+
+\end{itemize}
