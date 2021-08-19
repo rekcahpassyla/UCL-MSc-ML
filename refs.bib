@@ -235,7 +235,6 @@ author = {Robert L. Goldstone and Brian J. Rogosky},
 keywords = {Concepts, Meaning, Symbol grounding, Conceptual-role semantics, Translation, Neural networks},
 }
 
-
 @Book{deeplearninggoodfellow,
   Title                    = {Deep Learning},
   Author                   = {Ian J. Goodfellow and Yoshua Bengio and Aaron Courville},
@@ -244,6 +243,15 @@ keywords = {Concepts, Meaning, Symbol grounding, Conceptual-role semantics, Tran
 
   Address                  = {Cambridge, MA, USA},
   Note                     = {\url{http://www.deeplearningbook.org}}
+}
+
+@misc{GAN,
+      title={Generative Adversarial Networks}, 
+      author={Ian J. Goodfellow and Jean Pouget-Abadie and Mehdi Mirza and Bing Xu and David Warde-Farley and Sherjil Ozair and Aaron Courville and Yoshua Bengio},
+      year={2014},
+      eprint={1406.2661},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML}
 }
 
 @Article{SecondOrderIsomorphismFaces,
@@ -606,6 +614,23 @@ doi={10.3758/s13428-019-01285-3},
 url={https://doi.org/10.3758/s13428-019-01285-3}
 }
 
+
+@article{RoadsLoveCVPR,
+  author    = {Brett D. Roads and
+               Bradley C. Love},
+  title     = {Enriching ImageNet with Human Similarity Judgments and Psychological
+               Embeddings},
+  journal   = {CoRR},
+  volume    = {abs/2011.11015},
+  year      = {2020},
+  url       = {https://arxiv.org/abs/2011.11015},
+  archivePrefix = {arXiv},
+  eprint    = {2011.11015},
+  timestamp = {Wed, 25 Nov 2020 17:55:02 +0100},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-2011-11015.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
 @Article{RoadsLoveNatureMachineIntelligence,
 author={Roads, Brett D.
 and Love, Bradley C.},
@@ -622,13 +647,38 @@ doi={10.1038/s42256-019-0132-2},
 url={https://doi.org/10.1038/s42256-019-0132-2}
 }
 
-
+@article{OverviewMultiTaskLearning,
+  title={An overview of multi-task learning in deep neural networks},
+  author={Ruder, Sebastian},
+  journal={arXiv preprint arXiv:1706.05098},
+  year={2017}
+}
 
 @inproceedings{ObjectRecognitionSceneAlignment,
   title={Object Recognition by Scene Alignment},
   author={Bryan C. Russell and A. Torralba and Ce Liu and R. Fergus and W. Freeman},
   booktitle={NIPS},
   year={2007}
+}
+
+
+@article{ImprovedTechniquesTrainingGANS,
+  author    = {Tim Salimans and
+               Ian J. Goodfellow and
+               Wojciech Zaremba and
+               Vicki Cheung and
+               Alec Radford and
+               Xi Chen},
+  title     = {Improved Techniques for Training GANs},
+  journal   = {CoRR},
+  volume    = {abs/1606.03498},
+  year      = {2016},
+  url       = {http://arxiv.org/abs/1606.03498},
+  archivePrefix = {arXiv},
+  eprint    = {1606.03498},
+  timestamp = {Sun, 16 Sep 2018 14:17:04 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/SalimansGZCRC16.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 
@@ -728,8 +778,6 @@ author = {Lorraine K. Tyler and Helen E. Moss},
 }
 
 @article{tsne,
-  abstract = {We present a new technique called {\textquotedblleft}t-SNE{\textquotedblright} that visualizes high-dimensional data by giving each datapoint a location in a two or three-dimensional map. The technique is a variation of Stochastic Neighbor Embedding (Hinton and Roweis, 2002) that is much easier to optimize, and produces signi\&$\#$64257;cantly better visualizations by reducing the tendency to crowd points together in the center of the map. t-SNE is better than existing techniques at creating a single map that reveals structure at many different scales. This is particularly important for high-dimensional data that lie on several different, but related, low-dimensional manifolds, such as images of objects from multiple classes seen from multiple viewpoints. For visualizing the structure of very large datasets, we show how t-SNE can use random walks on neighborhood graphs to allow the implicit structure of all of the data to in\&$\#$64258;uence the way in which a subset of the data is displayed. We illustrate the performance of t-SNE on a wide variety of datasets and compare it with many other non-parametric visualization techniques, including Sammon mapping, Isomap, and Locally Linear Embedding. The visualizations produced by t-SNE are signi\&$\#$64257;cantly better than those produced by the other techniques on almost all of the datasets.},
-  added-at = {2015-03-24T16:21:30.000+0100},
   attachments = {http://prlab.tudelft.nl/sites/default/files/vandermaaten08a.pdf},
   author = {van der Maaten, Laurens and Hinton, Geoffrey E.},
   biburl = {https://www.bibsonomy.org/bibtex/25fde64f4b6ca95060a329b980a54013f/saos},
@@ -744,6 +792,15 @@ author = {Lorraine K. Tyler and Helen E. Moss},
   year = 2008
 }
 
+
+@misc{vilnis2015word,
+      title={Word Representations via Gaussian Embedding}, 
+      author={Luke Vilnis and Andrew McCallum},
+      year={2015},
+      eprint={1412.6623},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
 
 @misc{wingate2013automated,
       title={Automated Variational Inference in Probabilistic Programming}, 
@@ -777,6 +834,23 @@ author = {Lorraine K. Tyler and Helen E. Moss},
   author={Meng Zhang and Yang Liu and Huanbo Luan and Maosong Sun},
   booktitle={EMNLP},
   year={2017}
+}
+
+@article{DensityMatchingWordEmbeddings,
+  author    = {Chunting Zhou and
+               Xuezhe Ma and
+               Di Wang and
+               Graham Neubig},
+  title     = {Density Matching for Bilingual Word Embedding},
+  journal   = {CoRR},
+  volume    = {abs/1904.02343},
+  year      = {2019},
+  url       = {http://arxiv.org/abs/1904.02343},
+  archivePrefix = {arXiv},
+  eprint    = {1904.02343},
+  timestamp = {Wed, 24 Apr 2019 12:21:25 +0200},
+  biburl    = {https://dblp.org/rec/journals/corr/abs-1904-02343.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 
 @article{CycleGAN,

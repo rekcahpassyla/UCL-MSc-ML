@@ -2,6 +2,11 @@
 
 \todo[inline]{Fill out specific details of the items introduced in the previous chapter}
 
+
+\todo[inline]{Add more motivation for probabilistic embeddings. For example, preview problem with existing algorithms: When embeddings are inferred, there are multiple sources of uncertainty and local optima leading to different representations which are equally valid. Implication for alignment is that extra information such as variance, can be helpful for disambiguation. }
+
+\todo[inline]{Make more references to multi modal learning having a synergistic effect - reference multi task training \cite{DeepMultimodalEmbedding} and \cite{OverviewMultiTaskLearning}}
+
 \section{Concepts}
 
 There is a wide body of philosophical literature on the exact definition of a concept, but in this document we will focus on the definition from \cite{stanfordconcepts} of concepts as mental representations or psychological entities, as it is also a main definition used in cognitive science \cite{Pinker2007}. In \cite{NatureOfHumanConcepts}, concepts are related to human characterisation of categories of objects, noting that such categories may overlap and have fuzzy boundaries. In \cite{GOLDSTONE2002295}, concepts are defined not only by features (apple maps to 'red or green or yellow in colour', 'round in shape') - the ``external grounding" description of meaning, but also by their relationships to each other ('apple' is more like 'pear' but less like 'durian'). The ``conceptual web" description states that a concept's meaning is defined by its place in the structure of all concepts in the system. 
@@ -14,9 +19,20 @@ There is precedent for this way of thinking in the psychological and cognitive s
 
 The prevailing body of research evidence thus suggests that concepts may be considered to embody observed phenomena or events in the world, and that the relationships between concepts are important. 
 
+\section{Multi-task learning}
+
+\cite{OverviewMultiTaskLearning} gives several reasons for why multi-task learning allows models to generalise better. By training on multiple tasks, the model can learn a more general representation of the pattern that underlies all those tasks. If this general representation is closer to the true underlying representation of the generative pattern for the data underlying all tasks, learning it will allow the model to generalise to novel tasks better. This representation is also less likely to overfit as it might be if it was trained only on one task, because multi-task learning also has a regularising effect by adding an inductive bias. 
+
+
 \section{Embeddings}
 
-In machine learning, embeddings are real-valued, continuous, vector representations of features, which themselves may conform to concepts or features. Language embeddings are the most commonly known types of embeddings (that is, they are built from textual input data), but may originate from any data. Embeddings are intrinsically a dimensionality reduction technique for representing potentially very high dimensional data in a lower dimensional space. One of the first word embedding algorithms is \texttt{word2vec} \cite{word2vec}, in which a neural network is used to learn embeddings from a corpus. The algorithm projects similar words to similar locations in the target vector space, taking advantage of co-occurrence patterns (some words occur in the neighbourhood of other words). The resulting embeddings should reflect the semantic properties of words. The ``Continuous Bag Of Words" (CBOW) variant uses a window of context (disregarding order) to predict the current word, and the Skip-gram variant uses the current word to predict the context window, weighted by distance from the current word. In both cases, we see that the context of the current word is important, pointing again to a relationship between concepts being used as input into embedding creation. The GloVe \cite{pennington2014glove} algorithm is another commonly used word embedding algorithm based on co-occurrence statistics. Embeddings are learnt based on co-occurrence statistics over an entire corpus, with the co-occurrence of a pair of words being augmented by 1 every time those words occur within a set context window of each other in the corpus. These algorithm can be generalised to learn embeddings from any source of co-occurrence statistics; in \cite{CoocurrenceVisionLanguage2021}, a set of object embeddings called \texttt{object2vec} was built from co-occurrence statistics from the ADE20K data set \todo{find citation} of images labelled by human annotators, using the \texttt{word2vec} algorithm. 
+In machine learning, embeddings are real-valued, continuous, vector representations of features, which themselves may conform to concepts or features. Language embeddings are the most commonly known types of embeddings (that is, they are built from textual input data), but may originate from any data. Embeddings are intrinsically a dimensionality reduction technique for representing potentially very high dimensional data in a lower dimensional space. One of the first word embedding algorithms is \texttt{word2vec} \cite{word2vec}, in which a neural network is used to learn embeddings from a corpus. The algorithm projects similar words to similar locations in the target vector space, taking advantage of co-occurrence patterns (some words occur in the neighbourhood of other words). The resulting embeddings should reflect the semantic properties of words. The ``Continuous Bag Of Words" (CBOW) variant uses a window of context (disregarding order) to predict the current word, and the Skip-gram variant uses the current word to predict the context window, weighted by distance from the current word. In both cases, we see that the context of the current word is important, pointing again to a relationship between concepts being used as input into embedding creation. 
+
+The GloVe \cite{pennington2014glove} algorithm is another commonly used word embedding algorithm based on co-occurrence statistics. Embeddings are learnt based on co-occurrence statistics over an entire corpus, with the co-occurrence of a pair of words being augmented by 1 every time those words occur within a set context window of each other in the corpus. These algorithm can be generalised to learn embeddings from any source of co-occurrence statistics; in \cite{CoocurrenceVisionLanguage2021}, a set of object embeddings called \texttt{object2vec} was built from co-occurrence statistics from the ADE20K data set \todo{find citation} of images labelled by human annotators, using the \texttt{word2vec} algorithm. 
+
+\cite{MikolovMachineTranslation} found that word embedding spaces have similar structure over different languages, even when those languages are linguistically quite far apart, like English and Vietnamese. This provides more support for the ideas in the previous section; that the relationships between nodes in the concept systems are significant. 
+
+Most algorithms to learn embeddings have significant stochasticity, as they are often learnt by minimising loss using stochastic gradient descent. As with any such problem the loss function landscape is complex, and there are many local minima, with the solution being highly sensitive to initial conditions. Therefore, runs with different random seeds will produce different embeddings; not just the individual embedding values will differ, but also the relationships between those embeddings. In a later part of this document we show examples of this. 
 
 \todo[inline]{FastText}
 
@@ -24,7 +40,9 @@ In machine learning, embeddings are real-valued, continuous, vector representati
 
 A method of creating embeddings that does not use co-occurrence data is described in \cite{LaplacianEigenmaps}; it is a geometrically motivated graph-based algorithm. A weighted graph is created with a node for each point (concept), and edges are added between nodes if they meet some definition of closeness (such as Euclidean distance, or being in the $k$-nearest neighbour set). The embeddings are the eigenvectors of the graph Laplacian. This algorithm is also context-based but in a different way; it preserves local neighbourhood information and is shown to result in sensible clustering as shown with word embeddings created using it. 
 
-All of the above algorithms result in deterministic embeddings; deterministic in the sense that each concept is represented by one vector of numbers (the embeddings themselves may generated in a non-deterministic fashion, in that many of the algorithms are based on neural networks which have a stochastic component to their learning). We can generalise the idea to probabilistic embeddings, in which each embedding is represented by multiple vectors that represent parameters of a prior distribution. For example we may consider embeddings to be multivariate Gaussians with independent dimensions (diagonal covariance matrix), therefore allowing us to represent each embedding as two $n$-dimensional vectors, one each for the mean and variance of the distribution. By learning the variance as well, we derive further information about each concept that can be used to quantify the degree of uncertainty of that concept in the system. \cite{ProbabilisticEmbeddingsCrossModal} represent cross-modal embeddings as probability distributions in embedding space, and use the uncertainty represented by the learnt variance in automated decision making. Including the uncertainty in their information retrieval task improved performance, as well as increased the interpretability of the final embeddings.  
+All of the above algorithms result in deterministic embeddings; deterministic in the sense that each concept is represented by one vector of numbers (the embeddings themselves may generated in a non-deterministic fashion, in that many of the algorithms are based on neural networks which have a stochastic component to their learning). We can generalise the idea to probabilistic embeddings, in which each embedding is represented by multiple vectors that represent parameters of a prior distribution. For example we may consider embeddings to be multivariate Gaussians with independent dimensions (diagonal covariance matrix), therefore allowing us to represent each embedding as two $n$-dimensional vectors, one each for the mean and variance of the distribution. By learning the variance as well, we derive further information about each concept that can be used to quantify the degree of uncertainty of that concept in the system. \cite{ProbabilisticEmbeddingsCrossModal} represent cross-modal embeddings as probability distributions in embedding space, and use the uncertainty represented by the learnt variance in automated decision making. Including the uncertainty in their information retrieval task improved performance, as well as increased the interpretability of the final embeddings. Looking ahead to the problem of finding correspondences between embeddings in multiple domains, we also see that if there are two dimensions to each embedding, this can provide additional information for disambiguation during the mapping process. 
+
+\cite{DensityMatchingWordEmbeddings} and \cite{vilnis2015word} learn word embeddings by modeling each embedding as a probability density function. \cite{DensityMatchingWordEmbeddings} learn bilingual embeddings in an unsupervised way by matching the densities of the two monolingual embedding spaces. This allowed them to achieve state-of-the-art results on linguistically distant language pairs without the special initialisation or complicated optimisation required by many unsupervised methods. \cite{vilnis2015word} learn a mapping from words and words in context to a Gaussian distribution over a latent space. This mapping is such that the linguistic and semantic properties of the words are preserved by the relationships between the distributions. Words that appear in similar context should have similar embeddings. In particular, they wished the entailment relationships (if there is an entailment relationship between A and B, A must imply B) to be represented by inclusion between the variances of A's and B's respective Gaussian distributions. 
 
 \section{Alignment and ways to achieve it}
     
@@ -35,7 +53,14 @@ The notation from \cite{ManifoldLearningTheoryAndApplications} is used here to s
 
 If there are two datasets $X$ and $Y$ whose instances all lie on the same underlying manifold $Z$, the alignment problem requires finding functions $f$ and $g$ such that $f(x_i)$ is close, for some problem-specific definition of distance, to $g(y_j)$.
 
-\todo[inline]{Take figure 5.3 from \cite{ManifoldLearningTheoryAndApplications}}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{images/review/alignment.png}
+    \caption{
+        Figure taken from \cite{ManifoldLearningTheoryAndApplications}. The $\vecX$ and $\vecY$ spirals denote the two datasets, with the center line showing the data points embedded into the shared space, with local similarity relations being preserved. $f$ and $g$ denote the functions mapping $\vecX$ and $\vecY$ respectively into the shared space. 
+    }
+    % generated by analyse.py 
+\end{figure}
 
 If $f(x_i) = g(y_j)$, then $x_i$ and $y_j$ are in correspondence. If we know ahead of time that $x_i$ and $y_j$ are analogous points in their datasets, then we can provide this information to the algorithm that is trying to infer $f$ and $g$. The union of the ranges of $f$ and $g$ is then the joint latent space. This can be generalised to more datasets than two. 
 
@@ -56,20 +81,11 @@ Some examples of alignment problems are given below. They span a wide range of a
     \item information extraction: Mapping unstructured information (eg. free text) to knowledge graphs with a fixed structure. 
 \end{itemize}
 
-\begin{itemize}
-    \item Describe what concept alignment means
-    \begin{itemize}
-        \item Why is alignment important- examples of where alignment can be useful 
-
-        \item How to detect alignment - \cite{RepresentationalSimilarityAnalysis}
-    \end{itemize}
-\end{itemize}
-
 \subsection{Methods for concept alignment}
 
 \subsubsection{Regression models}
 \begin{itemize}
-        \item Regression / orthogonal models: \cite{kalinowski2020survey} Learn a transformation matrix W (possibly orthogonally constrained) from one domain to another, minimising mean squared loss $Wf(x) - y$ which can then be applied to a new source vector to map into target space. 
+        \item Regression / orthogonal models: \cite{kalinowski2020survey} Learn a transformation matrix W (possibly orthogonally constrained) from one domain to another, minimising mean squared loss $Wf(x) - y$ which can then be applied to a new source vector to map into target space. \cite{MikolovMachineTranslation} uses this to find a ``translation matrix" that can map from word embeddings in one language space to another language space. 
         \item Plus with various standard pre-processing steps: normalisation to unit norm / mean centering, decorrelation to have unit variance, SVD for dimension reduction. 
         \item Margin models: Still solving for alignment matrix W, reward weights associated with concepts that map directly but penalise the signal from other pairs. \cite{kalinowski2020survey} equation in Margin Models section. This is supposed to reduce ``hubness": Embeddings that have high similarity with everything in source or target space. This can be caused by some items being present in too many input data items (common frequency words, commonly present objects in pictures). 
         \item Loss functions that contain neighbourhood information: Relaxed Cross-Domain similarity local scaling, Locality preserving loss 
@@ -115,7 +131,7 @@ If the source and target embeddings $\vecX$ and $\vecY$ are thought of as probab
 
 where $\vecQ$ is an orthogonal matrix. In order to practically solve this optimisation, they developed a novel stochastic algorithm to minimise a convex relaxation of this problem, details of which are omitted here. 
 
-Point set or point cloud registration, is the manifold alignment problem applied to computer vision. 
+Point set or point cloud registration, is the manifold alignment problem applied to computer vision. As computer vision operates in 2 or 3 dimensions, many of its algorithms are specialised for that dimensionality and do not necessarily generalise well to alignment of embeddings with higher dimensionality. 
 
 \subsubsection{Graph matching and graph similarity methods}
 
@@ -124,6 +140,8 @@ As described in \cite{kalinowski2020survey}, entities and relationships can be m
 The general graph isomorphism problem, that of telling if two graphs represent the same structure, is NP-hard \cite{GraphIsomorphismNPHard}. There are polynomial-time algorithms for certain subtypes of graphs or trees \todo[inline]{take citations from \cite{kalinowski2020survey}}, but in general heuristic algorithms are the only practical possibilities. 
 
 The \texttt{torch-two-sample} Python library and its corresponding paper \cite{torchtwosample} introduce smoothed versions of some graph-based similarity measures, the Friedman Rafsky test and k-nearest neighbours test, that can be used as loss functions for learning similar graph structures. These are not graph isomorphism methods per se, but rather aim to provide metrics for measuring how similar two distributions are based on graph-based properties.
+
+\todo[inline]{Probably move this to appendix}
 
 We introduce the following notation, which differs from that in \cite{torchtwosample} to avoid overloading previously defined terms in this document. 
 
@@ -174,40 +192,22 @@ P(U | \vecd / \lambda) &= \exp\Big[-\sum_{e \in U} d(e) / \lambda - A(-\vecd / \
 
 where $\lambda$ is a hyperparameter (the ``temperature parameter") and $A(-\vecd / \lambda)$ is the log-partition function  that normalises the distribution. $U^*$ is thus a maximum a posteriori configuration for $P(U | \vecd/\lambda)$, and as $\lambda$ tends to 0,  $P(U | \vecd/\lambda)$ will tend to the MAP estimate. 
 
-If we use the expectation $E_{U}[T_{\pi^*}(U)]$ in place of the original statistic $T_{\pi^*(U^*)}$, since $P(U)$ (\ref{eq:smoothed}) is a member of the exponential family, we can compute its first and second moments, which lead to the values of the smoothed statistic as well as its derivative. These functions can now be used as loss functions. 
+If we use the expectation $E_{U}[T_{\pi^*}(U)]$ in place of the original statistic $T_{\pi^*(U^*)}$, since $P(U)$ (\ref{eq:smoothed}) is a member of the exponential family, we can compute its first and second moments, which lead to the values of the smoothed statistic as well as its derivative. These functions can now be used as loss functions of which minimisation corresponds to the two inputs having greater graph similarity. 
 
 
-\todo[inline]{Other things to fill in}
-    \begin{itemize}
+\subsubsection{Generative adversarial networks}
 
-        \item Computer vision techniques - point set registration
-        \item Alignment after the fact (after learning) is a hard problem
-        \begin{itemize}
-            \item Describe why it is a hard problem - all the pairwise relationships etc. from computer vision object detection problem
-            \item High dimensionality leads to weights being stuck in local optima
-        \end{itemize}
-    \end{itemize}
+The general premise of generative adversarial models is to find a function (usually by means of a deep learning network) that generates samples identical to its inputs. A discriminator model is then trained against the generated outputs so that it learns to tell the difference between real and synthetic outputs. By alternating the training of these two models, the generator learns to produce better and better samples. In effect, the generator is learning to produce samples from the manifold on which the input data lies. This model type was first introduced in \cite{GAN} and has become a mainstay of alignment techniques. Below, we discuss some specific examples. 
+
+The Manifold Alignment GAN \cite{magan} attempts to counteract some of the problems with traditional GANs, one of them being that generated items can fool the discriminator at a batch level because the two manifolds are superimposed, rather than being aligned. When the manifolds are superimposed rather than aligned, it is as if the ``edges" of the manifolds match, but the points contained within them may be in any position. If we were to overlay the manifolds, the corresponding points would not overlap. There are obviously a very large number of possible mappings that result in overlapping but unaligned manifolds. The MAGAN introduces a correspondence loss \todo[inline]{include equations} that measures the distance between a data point and its mapped image in the other domain, as well as the reconstruction loss (difference between an original point and its reconstructed image after going through both generators). It also uses the mini-batch discrimination technique described in \cite{ImprovedTechniquesTrainingGANS} to prevent mode collapse, where all inputs get mapped to the same embedding by the generator. \todo[inline]{More details on minibatch discrimination}
+
+\cite{wordtranslationwithoutparalleldata} presents an adversarial method for learning cross-lingual word embeddings without supervision (without knowing beforehand any correspondences between the languages). If we consider the usual notation of $\vecX$ being the source embedding space and $\vecY$ being the target embedding space, the objective is to learn $\vecW$ such that $||\vecW \vecX||$ and $\vecY$ are as similar as possible. The discriminator is trained to distinguish between random samples from $\vecW \vecX$ and $\vecY$, while the generator is trained to learn $\vecW$ to prevent the discriminator from predicting accurately. They found however that the adversarial method alone did not yield better results than the supervised baseline. Therefore they also adopted a refinement procedure using Procrustes analysis to further improve the learnt $\W$. They found that the adversarial approach would try to align all words even if they are not frequent, but the embeddings for rare words are then less frequently updated. Since the learnt mapping is linear ($\vecW \vecX$) it would make sense to learn the mapping using only the most frequent words and refine afterwards. They also introduced a new metric, cross-domain similarity local scaling, which uses nearest neighbour information of each embedding to provide additional information to the optimisation. Using all of these improvements, they were able to improve upon the vanilla adversarial architecture. 
+
+CycleGAN \cite{CycleGAN} is not specifically an alignment model, but contains useful features which will inform our model design. CycleGAN is intended to provide image-to-image translation, where given two unordered image collections, one can be ``translated" into the style of the other. For example, pictures in the style of Monet into photographic style images, or horses into zebras. CycleGAN contains two GANs; one learns a mapping $f$ from the input set $\vecX$ to the target set $\vecY$, and one learns the mapping $g$ which maps $\vecY$ to $\vecX$ A key part of the CycleGAN model is the cycle consistency loss, which for the domain $\vecX$ is $f(g(\vecY)) - \vecX$ (there is an equivalent cycle consistency loss going the other way). This loss is intended to induce $f$ and $g$ to be consistent with each other; the MAGAN model also uses this loss, calling it ``reconstruction loss". The cycle consistency / reconstruction loss is intended to reduce the possibility of the learned mapping distribution matching the output distribution, but individual inputs not being mapped to individual outputs. This is a different way of expressing the alignment problem. 
+
+While GANs provide a useful basis for some alignment or alignment-like problems, there are certain types of datasets that are better suited as inputs. Datasets with large numbers of object classes are not necessarily suited to GANs as they tend to underestimate the entropy in the distribution \cite{ImprovedTechniquesTrainingGANS} \todo{Cannot seem to find any more information about this? }. Our particular dataset could be considered to have only one class per concept, if we take all concepts as end nodes in the taxonomy tree. It remains to be seen how well a GAN would perform on trying to align the two distributions that correspond to the two sets of concepts, which do not overlap. It is not clear whether the two concept sets from different modalities (furthermore of different cardinality in a very imbalanced way) form enough of a coherent distribution for the GAN to be able to learn its regularities. 
 
 
-\subsubsection{Adversarial models}
-\begin{itemize}
-    \item CycleGAN \cite{CycleGAN} - image to image translation. No paired examples, but does have ``set-level supervision" - have sets of images in first domain and set of images in second domain. 
-    \begin{itemize}
-        \item Common issues with GANS: mode collapse, all inputs map to the same output (degenerate mapping).
-        \item Cycle loss attempts to fix this. 
-        \item Minibatch discrimination also attempts to fix this. 
-        \item Adversarial loss is intended to force the generated output to be the same as the real output. 
-        \item In our problem, we only have one example of each concept; if we were to use a GAN we would have to learn the distribution of the dataset over many concepts. Do not know how this will scale. 
-    \end{itemize}
-    \item Manifold aligment - https://arxiv.org/abs/1803.00385 - Aligning biological manifolds
-        \begin{itemize}
-            \item Use GANs for mapping between domains without supervision
-            \item Given a point in one domain, generate a point from the same distribution as the other domain, however, do this by generating the most closely related such point.
-            \item MAGAN paper illustrates a common problem: Often a GAN will find a mapping that superimposes the manifolds but does not capture the point-to-point mapping (Fig 1). 
-            \item MAGAN also includes cycle loss and semi-supervision.  MAGAN ``correspondence loss" is the loss between a point in original domain and representation in other domain. 
-        \end{itemize}
-    \item GANs usually do well on input sets where multiple items in a set map to one class. Our dataset is not like this; each embedding is one class and we do not have a 
-\end{itemize}
 
 
 

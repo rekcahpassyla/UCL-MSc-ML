@@ -37,6 +37,13 @@
     \item Embedding quality as measured by Spearman correlation of embedding pair similarity and WordNet similarity was greater for the aligned Open Images embeddings than the independently learned Open Images embeddings.
     \item Embedding quality by the same metric was decreased for the aligned AudioSet embeddings compared to the independently learned AudioSet embeddings. 
     \item The MMD statistic increased embedding quality as measured by the Spearman correlation metric for both Open Images and AudioSet domains, compared to the case of not using the MMD statistic. 
+    \item There was less correlation between the entropy of the learned embeddings compared to the frequency of the occurrence of each concept, for aligned embeddings, compared to independently learned embeddings. (Could we expect that the variance of the distributions is less meaningful?)
+\end{itemize}
+
+\subsection{Computational performance}
+\begin{itemize}
+    \item Runtime - 150 epochs takes half an hour with saving models at lowest rate, convergence was fairly fast
+    \item Scalability - would it scale to more concepts - the bottleneck part of the process is actually creating the co-occurrence matrix. 
 \end{itemize}
 
 \section{Further directions}

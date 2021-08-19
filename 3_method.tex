@@ -163,7 +163,7 @@ This is done as follows for each domain (Open Images and AudioSet separately):
     \item Dot product distances are calculated between the learnt $\mu$ (the mean of the stochastic embeddings) for every pair of concepts. Since the stochastic embeddings can be thought of as distributions about a mean, where the mean would be the embedding learnt in the deterministic case. 
     \item This gives a similarity matrix between each embedding and itself, for each seed. 
     \item The correlation between the values of each run's similarity matrix with every other run was computed, and the mean value taken. A high value should indicate that the concepts in each run have the same similarity with each other. 
-    \item This was $0.9973 \pm 0.0001456$ for AudioSet and $0.9989 \pm 8.5261e-06$ for OpenImages. 
+    \item This was $ \pm $ for AudioSet and $0.9989 \pm 8.5261e-06$ for OpenImages. 
 % /home/petra/spond/spond/experimental/glove/results/audioset/ProbabilisticGlove/audioset_analytics.hdf5
 % /home/petra/spond/spond/experimental/glove/results/openimages/ProbabilisticGlove/openimages_analytics.hdf5
 \end{itemize}
@@ -196,6 +196,7 @@ We expect that concepts with lower incidence (that are present fewer times in th
 
 \todo[inline]{We also have the correlation with the deterministic embeddings. Does it mean anything? }
 
+\todo[inline]{Run stability calculation eg. how many of 5-nearest neighbour are present in different runs of same seed, top 200 concepts. }
 % audioset
 %In [8]: det_learnt_corr.mean()
 %Out[8]: 0.9189375433154889
@@ -220,91 +221,60 @@ We expect that concepts with lower incidence (that are present fewer times in th
 % For the following, run inspect_results.py and call mostalike to dump top 5 neighbours for a few seeds
 % then 
 
-The table below shows the 5 nearest neighbours (in the rows) to the concept ``Cat" in the Open Images domain, over five seeds. The distance metric is Euclidean distance. There is a consistency to the items, but they do not appear to be very related to the concept of ``Cat".  
+The table below shows the 3 nearest neighbours (in the rows) to the concept ``Cat" in the Open Images domain, over five seeds. The distance metric is Euclidean distance. There is a consistency to the items, but they do not appear to be very related to the concept of ``Cat".  
 
-    \begin{table}[h]
-    \begin{tabular}{@{}llllll@{}}
-Rank / Seed &1 &2 &3 &4 &5 \\
-    \toprule
-1&\begin{tabular}[c]{@{}l@{}} Water \\ 0.263 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Water \\ 0.202 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Book \\ 0.301 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Smile \\ 0.250 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Flower \\ 0.309 \end{tabular} \\
-2&\begin{tabular}[c]{@{}l@{}} Smile \\ 0.302 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Smile \\ 0.237 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Smile \\ 0.329 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Computer \\ 0.298 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Water \\ 0.317 \end{tabular} \\
-3&\begin{tabular}[c]{@{}l@{}} Flower \\ 0.318 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Flower \\ 0.278 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Flower \\ 0.333 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Book \\ 0.303 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Smile \\ 0.324 \end{tabular} \\
-4&\begin{tabular}[c]{@{}l@{}} Screenshot \\ 0.343 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Screenshot \\ 0.313 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Water \\ 0.341 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Cartoon \\ 0.322 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Screenshot \\ 0.348 \end{tabular} \\
-5&\begin{tabular}[c]{@{}l@{}} Book \\ 0.381 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Handwriting \\ 0.342 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Screenshot \\ 0.354 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Water \\ 0.345 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Book \\ 0.351 \end{tabular} \\
-
-    \end{tabular}
-    \end{table}
-
-This table shows the 5 nearest neighbours to the concept ``Domestic short-haired cat" in the Open Images domain, also over five seeds. This looks a lot more sensible. 
-
-    \begin{table}[h]
-    \begin{tabular}{@{}llllll@{}}
-Rank / Seed &1 &2 &3 &4 &5 \\
-    \toprule
-1&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.119 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.134 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.211 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.169 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.116 \end{tabular} \\
-2&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.373 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.407 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.438 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.382 \end{tabular}&\begin{tabular}[c]{@{}l@{}} European shorthair \\ 0.385 \end{tabular} \\
-3&\begin{tabular}[c]{@{}l@{}} European shorthair \\ 0.379 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Himalayan \\ 0.430 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Himalayan \\ 0.443 \end{tabular}&\begin{tabular}[c]{@{}l@{}} European shorthair \\ 0.418 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.425 \end{tabular} \\
-4&\begin{tabular}[c]{@{}l@{}} Russian blue \\ 0.404 \end{tabular}&\begin{tabular}[c]{@{}l@{}} European shorthair \\ 0.440 \end{tabular}&\begin{tabular}[c]{@{}l@{}} European shorthair \\ 0.448 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Russian blue \\ 0.420 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Himalayan \\ 0.489 \end{tabular} \\
-5&\begin{tabular}[c]{@{}l@{}} Himalayan \\ 0.417 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Black cat \\ 0.447 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Ragdoll \\ 0.495 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Black cat \\ 0.455 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Russian blue \\ 0.497 \end{tabular} \\
+    \begin{table}[]
+    \begin{tabular}{@{}llll@{}}
+Rank / Seed &1 &2 &3 \\
+\toprule
+1&\begin{tabular}[c]{@{}l@{}} Rope \\ 0.290 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Cage \\ 0.257 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Totem pole \\ 0.392 \end{tabular} \\
+2&\begin{tabular}[c]{@{}l@{}} Surfing \\ 0.302 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Human \\ 0.306 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Sketch \\ 0.422 \end{tabular} \\
+3&\begin{tabular}[c]{@{}l@{}} Hammock \\ 0.302 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Mammal \\ 0.403 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Peace symbols \\ 0.429 \end{tabular} \\
+4&\begin{tabular}[c]{@{}l@{}} Picnic table \\ 0.364 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Fawn \\ 0.412 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Beach \\ 0.429 \end{tabular} \\
+5&\begin{tabular}[c]{@{}l@{}} Screenshot \\ 0.394 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Vertebrate \\ 0.421 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Outdoor furniture \\ 0.438 \end{tabular} \\
 
     \end{tabular}
     \end{table}
 
-Entropy distributions for the two concepts over 5 seeds:
 
-\begin{verbatim}
-In [46]: get_entropies('ProbabilisticGlove', 0, 'openimages', 'Cat')
-Out[46]: 
-1   -3.318421
-2   -4.106071
-3   -3.807085
-4   -3.940148
-5   -4.422097
-dtype: float32
 
-In [47]: get_entropies('ProbabilisticGlove', 0, 'openimages', 'Domestic short-haired cat')
-Out[47]: 
-1   -1.748797
-2   -1.709205
-3   -2.051872
-4   -1.420663
-5   -2.258545
-dtype: float32
+This table shows the 5 nearest neighbours to the concept ``Domestic short-haired cat" in the Open Images domain, also over 3 seeds. This looks a lot more sensible. 
 
-\end{verbatim}
+
+    \begin{table}[]
+    \begin{tabular}{@{}llll@{}}
+Rank / Seed &1 &2 &3 \\
+\toprule
+1&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.100 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.083 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Malayan cat \\ 0.144 \end{tabular} \\
+2&\begin{tabular}[c]{@{}l@{}} Burmese \\ 0.195 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Russian blue \\ 0.118 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Himalayan \\ 0.183 \end{tabular} \\
+3&\begin{tabular}[c]{@{}l@{}} Russian blue \\ 0.215 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Bombay \\ 0.229 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Russian blue \\ 0.200 \end{tabular} \\
+4&\begin{tabular}[c]{@{}l@{}} Abyssinian \\ 0.228 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Polydactyl cat \\ 0.237 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Bengal \\ 0.238 \end{tabular} \\
+5&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.240 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Ragdoll \\ 0.256 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tabby cat \\ 0.267 \end{tabular} \\
+
+    \end{tabular}
+    \end{table}
+
+
+\todo[inline]{It is a known weakness of Euclidean embeddings to represent hierarchical concepts. Hyperbolic / Poincare embeddings may be needed. }
+
 
 \todo[inline]{Is it possible to relate the results to the entropies? It is often the more specific terms that have more sensible nearest neighbours. This is the opposite of what I expected when looking at the entropies.}
 
 We observe that often, the more specific terms in the domain have more sensible nearest neighbours. For example, these are the 5 nearest neighbours to the concept ``Roti canai", which is a very specific type of Malaysian flatbread. The nearest neighbours are extremely specific and accurate; ``Roti prata", ``Paratha" and ``Uttapam" are all types of Asian flatbread. 
 
     \begin{table}[]
-    \begin{tabular}{@{}llllll@{}}
-Rank / Seed &1 &2 &3 &4 &5 \\
-    \toprule
-1&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.222 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.264 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.145 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.214 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.224 \end{tabular} \\
-2&\begin{tabular}[c]{@{}l@{}} Tortilla de patatas \\ 0.235 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti \\ 0.299 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Pastelón \\ 0.329 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Garlic fingers \\ 0.301 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tortilla de patatas \\ 0.321 \end{tabular} \\
-3&\begin{tabular}[c]{@{}l@{}} Pastelón \\ 0.244 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Paratha \\ 0.303 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Timballo \\ 0.340 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Paratha \\ 0.346 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Uttapam \\ 0.338 \end{tabular} \\
-4&\begin{tabular}[c]{@{}l@{}} Paratha \\ 0.287 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Uttapam \\ 0.315 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Pastitsio \\ 0.350 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Talo \\ 0.405 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tomato omelette \\ 0.340 \end{tabular} \\
-5&\begin{tabular}[c]{@{}l@{}} Timballo \\ 0.360 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Naan \\ 0.358 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Bobotie \\ 0.376 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Sicilian pizza \\ 0.430 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Sicilian pizza \\ 0.346 \end{tabular} \\
-
-    \end{tabular}
-    \end{table}
-
-
-This is another example of the above. ``Petimezi" is grape molasses, not a very common foodstuff. Despite this, the algorithm has captured enough from the co-occurrence statistics of the entire Open Images collection to come up with some very closely related other concepts. 
-
-    \begin{table}[]
-    \begin{tabular}{@{}llllll@{}}
-Rank / Seed &1 &2 &3 &4 &5 \\
+    \begin{tabular}{@{}llll@{}}
+Rank / Seed &1 &2 &3 \\
 \toprule
-1&\begin{tabular}[c]{@{}l@{}} Barley malt syrup \\ 0.105 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Barley malt syrup \\ 0.245 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Barley malt syrup \\ 0.417 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Brown rice syrup \\ 0.158 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Brown rice syrup \\ 0.138 \end{tabular} \\
-2&\begin{tabular}[c]{@{}l@{}} Brown rice syrup \\ 0.289 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Colada morada \\ 0.366 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Brown rice syrup \\ 0.427 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Barley malt syrup \\ 0.240 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Barley malt syrup \\ 0.187 \end{tabular} \\
-3&\begin{tabular}[c]{@{}l@{}} Colada morada \\ 0.362 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Pekmez \\ 0.391 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Maple syrup \\ 0.470 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Corn syrup \\ 0.341 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Coconut oil \\ 0.247 \end{tabular} \\
-4&\begin{tabular}[c]{@{}l@{}} Corn syrup \\ 0.403 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Tomato juice \\ 0.413 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Pekmez \\ 0.489 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Peanut oil \\ 0.367 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Peanut oil \\ 0.267 \end{tabular} \\
-5&\begin{tabular}[c]{@{}l@{}} Pekmez \\ 0.420 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Hot sauce \\ 0.447 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Jallab \\ 0.495 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Colada morada \\ 0.413 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Corn syrup \\ 0.306 \end{tabular} \\
+1&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.222 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.264 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti prata \\ 0.145 \end{tabular} \\
+2&\begin{tabular}[c]{@{}l@{}} Tortilla de patatas \\ 0.235 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Roti \\ 0.299 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Pastelón \\ 0.329 \end{tabular} \\
+3&\begin{tabular}[c]{@{}l@{}} Pastelón \\ 0.244 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Paratha \\ 0.303 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Timballo \\ 0.340 \end{tabular} \\
+4&\begin{tabular}[c]{@{}l@{}} Paratha \\ 0.287 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Uttapam \\ 0.315 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Pastitsio \\ 0.350 \end{tabular} \\
+5&\begin{tabular}[c]{@{}l@{}} Timballo \\ 0.360 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Naan \\ 0.358 \end{tabular}&\begin{tabular}[c]{@{}l@{}} Bobotie \\ 0.376 \end{tabular} \\
 
     \end{tabular}
     \end{table}
+
 
 
 \section{Alignment techniques}

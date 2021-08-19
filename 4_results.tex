@@ -20,8 +20,8 @@
 \toprule
 Domain &   Independent & Without MMD &  With MMD \\
 \midrule
-Open Images    &  $0.9989 \pm 8.5261e-06$  & 0.4738 $\pm$ 0.04391 &     0.4201 $\pm$  0.04008 \\
-AudioSet    & $0.9973 \pm 0.0001456$ &  0.3986 $\pm$ 0.04391  &      0.3455  $\pm$ 0.04250  \\
+Open Images    & 0.5895 $\pm$ 0.04863 & 0.4738 $\pm$ 0.04391 &     0.4201 $\pm$  0.04008 \\
+AudioSet    & 0.4115 $\pm$ 0.04449 &  0.3986 $\pm$ 0.04391  &      0.3455  $\pm$ 0.04250  \\
 \bottomrule
 \end{tabular}\\
 
@@ -33,8 +33,8 @@ The runs of the independently learned embeddings are much more correlated with e
 \toprule
 Domain &   Independent & Without MMD &  With MMD \\
 \midrule
-Open Images    &  -0.3369 & 0.04208 $\pm$ 0.01864 &     0.03622 $\pm$  0.01152 \\
-AudioSet    &  -0.3465 & -0.000539 $\pm$   0.07388 &      0.03590  $\pm$ 0.02592  \\
+Open Images    &  -0.1785 $\pm$ 0.01108 & 0.04208 $\pm$ 0.01864 &     0.03622 $\pm$  0.01152 \\
+AudioSet    &  -0.3998 $\pm$ 0.04148 & -0.000539 $\pm$   0.07388 &      0.03590  $\pm$ 0.02592  \\
 \bottomrule
 \end{tabular}\\
 
@@ -101,23 +101,25 @@ Hence, alignment accuracy is insufficient and we need another metric. To evaluat
 
 A plausible measure of embedding quality would be to compare the similarity of concept pairs as calculated from embeddings, with the similarity of concept pairs as evaluated by humans. In order to do this, we need to find human-curated datasets.
 
-One such dataset is the MTURK-771 dataset, created by the authors of \cite{mturk771}, a study of learning the relatedness of word pairs. This study also uses the technique of measuring the goodness of their relatedness-learning algorithm by comparing the Spearman correlation of its predictions with the human judgements. The MTURK-771 dataset comprises 771 pairs of words with human-rated similarity scores, collected using the Amazon Mechanical Turk online tool. Unfortunately, the intersection of the 771 word pairs with our Open Images and AudioSet concepts was not large - 200+ \todo[inline]{GET EXACT NUMBER} for Open Images and only 3 for AudioSet. Therefore, this dataset is not sufficient for comparison. 
+One such dataset is the MTURK-771 dataset, created by the authors of \cite{mturk771}, a study of learning the relatedness of word pairs. This study also uses the technique of measuring the goodness of their relatedness-learning algorithm by comparing the Spearman correlation of its predictions with the human judgements. The MTURK-771 dataset comprises 771 pairs of words with human-rated similarity scores, collected using the Amazon Mechanical Turk online tool. Unfortunately, the intersection of the 771 word pairs with our Open Images and AudioSet concepts was not large - 171 for Open Images and only 3 for AudioSet. 
 
 The WordNet \cite{WordNet} lexical database contains English nouns, verbs and adjectives grouped according to synonymy (semantic similarity) and hyponymy (hierarchy). Words in WordNet are represented by ``synsets", each of which denotes a particular sense of the word. Therefore, one word may have several synsets within WordNet. The relationships between word senses were encoded from various corpora and thesauri \todo[inline]{this seems wrong but thesauruses sounds stupid???}, which themselves were human-curated, therefore we take the lexical and semantic information contained within WordNet as an appropriate representation of human judgement. The WordNet database can be accessed directly from the \texttt{nltk} Python package. 
 
 Furthermore, there is a large overlap between pairs of words found in WordNet and pairs of concepts from our dataset.  Out of 128005400 nonzero pairs occurring in Open Images, 27052350 are also present in WordNet. Out of 42002 nonzero pairs in AudioSet, 19208 are also present in WordNet. 
 
-We adopt the same method used by \cite{mturk771} of comparing the Spearman correlation of the similarity of our embedding concept pairs with the similarity of the human-measured dataset to evaluate the quality of aligned embeddings compared to independently learned embeddings. The Spearman correlation is used because we wish to evaluate whether there is a monotonic relationship, and the similarity measures will be on different scales. The dot product is used as the similarity measure as it is an input into the GloVe algorithm that generates the `embeddings.
+A third available dataset originates from a prototype model for \cite{RoadsLoveCVPR}, in which human similarity judgements of pairs of concepts are collected to supplement the ImageNet Large-Scale Visual Recognition Challenge (ILSVRC) 2012 task. This dataset will be referred to as the ``enhanced ILSVRC" dataset. These judgements were collected from participants using Amazon Mechanical Turk. The data collection process was carefully curated to assemble a good set of human similarity judgements, using probabilistic techniques for trial selection to maximise the expected information gain from each trial. In this dataset, 147070 pairs overlap with Open Images, and 97 pairs overlap with AudioSet. 
+
+We adopt the same method used by \cite{mturk771} of comparing the Spearman correlation of the similarity of our embedding concept pairs with the similarity of the human-measured dataset to evaluate the quality of aligned embeddings compared to independently learned embeddings. The Spearman correlation is used because we wish to evaluate whether there is a monotonic relationship, and the similarity measures will be on different scales. The cosine similarity measure is used as it contains the dot product, which is an input into the GloVe algorithm that generates the embeddings.
 
 The similarity of two concepts with indexes $i$ and $j$ in embedding space is therefore measured as
 
 \begin{equation}
-s_{ij} &= \vece_i \cdot \vece_j
+s_{ij} = 1 - \frac{\vece_i \cdot \vece_j}{||\vece_i||\!||\vece_j||}
 \end{equation}
 
-where $\vece$ represents the embedding. 
+where $\vece_i$ represents the $i$-th embedding .
 
-WordNet has various available similarity measures between synsets that can be computed directly from the Python library. We choose the Leacock-Chodorow (LCH) similarity measure (https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.14.1677&rep=rep1&type=pdf), which takes the shortest path between the two synsets, scaled by the maximum depth of the taxonomy \todo[inline]{DEFINE THIS}. Intuitively, if the two synsets are very similar, there will be a short path between them, and they will have a common ancestor that is not many levels up in the hierarchy. 
+The MTURK-771 and enhanced ILSVRC datasets are mappings of concept pairs to similarity values. However, there is no such WordNet dataset ready for use, so we have to construct one. WordNet has various available similarity measures between synsets that can be computed directly from the Python library. We choose the Leacock-Chodorow (LCH) similarity measure (https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.14.1677&rep=rep1&type=pdf), which takes the shortest path between the two synsets, scaled by the maximum depth of the taxonomy \todo[inline]{DEFINE THIS}. Intuitively, if the two synsets are very similar, there will be a short path between them, and they will have a common ancestor that is not many levels up in the hierarchy. 
 
 As a single word or phrase may map to several synsets, and we have no sense information in our Open Images / AudioSet concept names to disambiguate, we have to use a heuristic algorithm for choosing a synset in the cases where there is more than one:
 
@@ -131,52 +133,97 @@ As a single word or phrase may map to several synsets, and we have no sense info
 
 If the Spearman correlation between the aligned embedding pair similarity and WordNet pair similarity is higher than the Spearman correlation between the independently learned embedding pair similarity and WordNet pair similarity, it indicates that the aligned embedding pairs are in aggregate more like human judgement of similarity than the independent embedding pairs. Since our goal is to obtain embeddings that are more similar to human judgement, this would translate to the aligned embeddings being of higher quality, by this metric. We can generalise this to other model variants, for example aligning with or without the MMD loss, to evaluate the effect of those model variants. 
 
+\subsection{Comparison with MTURK-771}
+Only Open Images was compared with this dataset, as there were too few pairs overlapping with AudioSet (only three). 
+
+\subsubsection{Open Images, Spearman correlation with MTURK-771 similarity}\\
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.357040 &  0.305814 &     0.947826 &     0.331085 &         0.947826 \\
+2    &     0.342876 &  0.271306 &     0.956522 &     0.296354 &         0.982609 \\
+3    &     0.375564 &  0.338173 &     0.934783 &     0.287192 &         0.956522 \\
+4    &     0.342911 &  0.299614 &     0.952174 &     0.289880 &         0.965217 \\
+5    &     0.357850 &  0.255958 &     0.947826 &     0.225208 &         0.960870 \\
+6    &     0.373989 &  0.308962 &     0.952174 &     0.271217 &         0.973913 \\
+7    &     0.347433 &  0.296559 &     0.965217 &     0.292202 &         0.965217 \\
+8    &     0.343246 &  0.284002 &     0.969565 &     0.283377 &         0.952174 \\
+9    &     0.340476 &  0.279059 &     0.956522 &     0.271877 &         0.956522 \\
+10   &     0.366640 &  0.267160 &     0.960870 &     0.283802 &         0.952174 \\
+\midrule
+mean &     0.354803 &  0.290661 &     0.954348 &     0.283219 &         0.961304 \\
+\bottomrule
+\end{tabular}\\
+
+
+\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and MTURK-771 and independent embeddings}
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    & -0.051227 &    -0.025955 \\
+2    & -0.071571 &    -0.046522 \\
+3    & -0.037390 &    -0.088372 \\
+4    & -0.043297 &    -0.053031 \\
+5    & -0.101893 &    -0.132642 \\
+6    & -0.065027 &    -0.102772 \\
+7    & -0.050874 &    -0.055231 \\
+8    & -0.059244 &    -0.059869 \\
+9    & -0.061417 &    -0.068599 \\
+10   & -0.099481 &    -0.082839 \\
+\midrule
+mean & -0.064142 &    -0.071583 \\
+\bottomrule
+\end{tabular}\\
+
+
+
+\subsection{Comparison with WordNet}
+
 \subsubsection{Open Images, Spearman correlation with WordNet similarity}
 
 \begin{tabular}{lrrrrr}
 \toprule
 {} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
 \midrule
-1    &     0.146461 &  0.206897 &     0.947826 &     0.207112 &         0.947826 \\
-2    &     0.146638 &  0.190739 &     0.956522 &     0.204374 &         0.982609 \\
-3    &     0.146598 &  0.220325 &     0.934783 &     0.224408 &         0.956522 \\
-4    &     0.146336 &  0.211183 &     0.952174 &     0.207201 &         0.965217 \\
-5    &     0.147186 &  0.199297 &     0.947826 &     0.202284 &         0.960870 \\
-6    &     0.146104 &  0.217810 &     0.952174 &     0.218575 &         0.973913 \\
-7    &     0.146059 &  0.205329 &     0.965217 &     0.219786 &         0.965217 \\
-8    &     0.147155 &  0.190543 &     0.969565 &     0.194335 &         0.952174 \\
-9    &     0.146923 &  0.196938 &     0.956522 &     0.212506 &         0.956522 \\
-10   &     0.146870 &  0.202247 &     0.960870 &     0.211041 &         0.952174 \\
-mean &     0.146633 &  0.204131 &     0.954348 &     0.210162 &         0.961304 \\
+1    &     0.204645 &  0.229008 &     0.947826 &     0.228036 &         0.947826 \\
+2    &     0.195614 &  0.221148 &     0.956522 &     0.230173 &         0.982609 \\
+3    &     0.199725 &  0.239952 &     0.934783 &     0.239973 &         0.956522 \\
+4    &     0.210023 &  0.233182 &     0.952174 &     0.228500 &         0.965217 \\
+5    &     0.190570 &  0.225954 &     0.947826 &     0.226141 &         0.960870 \\
+6    &     0.206630 &  0.238630 &     0.952174 &     0.236737 &         0.973913 \\
+7    &     0.207851 &  0.229461 &     0.965217 &     0.238660 &         0.965217 \\
+8    &     0.215203 &  0.217090 &     0.969565 &     0.218335 &         0.952174 \\
+9    &     0.216922 &  0.223884 &     0.956522 &     0.233538 &         0.956522 \\
+10   &     0.206950 &  0.225371 &     0.960870 &     0.230410 &         0.952174 \\
+\midrule
+mean &     0.205413 &  0.228368 &     0.954348 &     0.231050 &         0.961304 \\
 \bottomrule
 \end{tabular}
 
-
-
-
-\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and WordNet and independent embeddings} with WordNet\\
-
+\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and WordNet and independent embeddings} \\
 
 \begin{tabular}{lrr}
 \toprule
 {} &   aligned &  aligned\_mmd \\
 \midrule
-1    &  0.060436 &     0.060651 \\
-2    &  0.044100 &     0.057736 \\
-3    &  0.073727 &     0.077810 \\
-4    &  0.064847 &     0.060866 \\
-5    &  0.052110 &     0.055098 \\
-6    &  0.071706 &     0.072471 \\
-7    &  0.059271 &     0.073727 \\
-8    &  0.043389 &     0.047181 \\
-9    &  0.050014 &     0.065583 \\
-10   &  0.055377 &     0.064171 \\
-mean &  0.057498 &     0.063529 \\
+1    &  0.024363 &     0.023391 \\
+2    &  0.025535 &     0.034559 \\
+3    &  0.040227 &     0.040248 \\
+4    &  0.023160 &     0.018477 \\
+5    &  0.035384 &     0.035571 \\
+6    &  0.032000 &     0.030108 \\
+7    &  0.021610 &     0.030809 \\
+8    &  0.001887 &     0.003131 \\
+9    &  0.006962 &     0.016616 \\
+10   &  0.018421 &     0.023459 \\
+\midrule
+mean &  0.022955 &     0.025637 \\
 \bottomrule
 \end{tabular}
-
-
-
 
 
 \subsubsection{AudioSet, Spearman correlation with WordNet similarity}
@@ -185,17 +232,18 @@ mean &  0.057498 &     0.063529 \\
 \toprule
 {} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
 \midrule
-1    &     0.152214 &  0.134991 &     0.947826 &     0.146133 &         0.965217 \\
-2    &     0.150857 &  0.117635 &     0.969565 &     0.137159 &         0.982609 \\
-3    &     0.145463 &  0.149323 &     0.956522 &     0.121679 &         0.978261 \\
-4    &     0.155565 &  0.139078 &     0.956522 &     0.164043 &         0.956522 \\
-5    &     0.157137 &  0.132362 &     0.943478 &     0.144181 &         0.969565 \\
-6    &     0.152070 &  0.112995 &     0.973913 &     0.115492 &         0.969565 \\
-7    &     0.149935 &  0.109444 &     0.947826 &     0.167198 &         0.973913 \\
-8    &     0.154389 &  0.166478 &     0.960870 &     0.119457 &         0.952174 \\
-9    &     0.157271 &  0.114488 &     0.960870 &     0.186357 &         0.978261 \\
-10   &     0.155973 &  0.145066 &     0.965217 &     0.130960 &         0.978261 \\
-mean &     0.153087 &  0.132186 &     0.958261 &     0.143266 &         0.970435 \\
+1    &     0.138980 &  0.162728 &     0.947826 &     0.152753 &         0.965217 \\
+2    &     0.132803 &  0.130027 &     0.969565 &     0.147193 &         0.982609 \\
+3    &     0.157127 &  0.174757 &     0.956522 &     0.133395 &         0.978261 \\
+4    &     0.146678 &  0.148297 &     0.956522 &     0.168750 &         0.956522 \\
+5    &     0.116176 &  0.151164 &     0.943478 &     0.152322 &         0.969565 \\
+6    &     0.144309 &  0.134435 &     0.973913 &     0.125409 &         0.969565 \\
+7    &     0.149543 &  0.133959 &     0.947826 &     0.169722 &         0.973913 \\
+8    &     0.140360 &  0.182683 &     0.960870 &     0.127695 &         0.952174 \\
+9    &     0.147353 &  0.135669 &     0.960870 &     0.187408 &         0.978261 \\
+10   &     0.149795 &  0.165782 &     0.965217 &     0.142835 &         0.978261 \\
+\midrule
+mean &     0.142313 &  0.151950 &     0.958261 &     0.150748 &         0.970435 \\
 \bottomrule
 \end{tabular}
 
@@ -206,22 +254,115 @@ mean &     0.153087 &  0.132186 &     0.958261 &     0.143266 &         0.970435
 \toprule
 {} &   aligned &  aligned\_mmd \\
 \midrule
-1    & -0.017223 &    -0.006081 \\
-2    & -0.033222 &    -0.013698 \\
-3    &  0.003861 &    -0.023783 \\
-4    & -0.016487 &     0.008478 \\
-5    & -0.024775 &    -0.012956 \\
-6    & -0.039075 &    -0.036577 \\
-7    & -0.040491 &     0.017263 \\
-8    &  0.012089 &    -0.034933 \\
-9    & -0.042784 &     0.029085 \\
-10   & -0.010906 &    -0.025013 \\
-mean & -0.020901 &    -0.009821 \\
+1    &  0.023748 &     0.013773 \\
+2    & -0.002776 &     0.014390 \\
+3    &  0.017631 &    -0.023732 \\
+4    &  0.001618 &     0.022072 \\
+5    &  0.034988 &     0.036146 \\
+6    & -0.009875 &    -0.018901 \\
+7    & -0.015584 &     0.020179 \\
+8    &  0.042323 &    -0.012665 \\
+9    & -0.011684 &     0.040055 \\
+10   &  0.015986 &    -0.006961 \\
+\midrule
+mean &  0.009637 &     0.008436 \\
+\bottomrule
+\end{tabular}
+
+\subsection{Comparison with ILSVRC}
+
+\subsubsection{Open Images, Spearman correlation with ILSVRC similarity}
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.523743 &  0.493222 &     0.947826 &     0.488418 &         0.947826 \\
+2    &     0.470860 &  0.460144 &     0.956522 &     0.457864 &         0.982609 \\
+3    &     0.482953 &  0.486438 &     0.934783 &     0.433406 &         0.956522 \\
+4    &     0.514398 &  0.531787 &     0.952174 &     0.482189 &         0.965217 \\
+5    &     0.504501 &  0.465994 &     0.947826 &     0.456137 &         0.960870 \\
+6    &     0.541152 &  0.472602 &     0.952174 &     0.450753 &         0.973913 \\
+7    &     0.506350 &  0.468013 &     0.965217 &     0.446900 &         0.965217 \\
+8    &     0.553240 &  0.458478 &     0.969565 &     0.468173 &         0.952174 \\
+9    &     0.507937 &  0.463128 &     0.956522 &     0.438866 &         0.956522 \\
+10   &     0.531030 &  0.463582 &     0.960870 &     0.451747 &         0.952174 \\
+\midrule
+mean &     0.513617 &  0.476339 &     0.954348 &     0.457445 &         0.961304 \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and ILSVRC and independent embeddings} \\
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    & -0.030521 &    -0.035326 \\
+2    & -0.010716 &    -0.012996 \\
+3    &  0.003485 &    -0.049548 \\
+4    &  0.017389 &    -0.032209 \\
+5    & -0.038507 &    -0.048364 \\
+6    & -0.068550 &    -0.090399 \\
+7    & -0.038337 &    -0.059450 \\
+8    & -0.094763 &    -0.085067 \\
+9    & -0.044809 &    -0.069071 \\
+10   & -0.067448 &    -0.079283 \\
+\midrule
+mean & -0.037278 &    -0.056171 \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{AudioSet, Spearman correlation with ILSVRC similarity}
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.689604 &  0.694930 &     0.947826 &     0.546510 &         0.965217 \\
+2    &     0.640701 &  0.690669 &     0.969565 &     0.629642 &         0.982609 \\
+3    &     0.659715 &  0.447073 &     0.956522 &     0.655823 &         0.978261 \\
+4    &     0.611982 &  0.647696 &     0.956522 &     0.670471 &         0.956522 \\
+5    &     0.628511 &  0.561054 &     0.943478 &     0.597820 &         0.969565 \\
+6    &     0.658426 &  0.621660 &     0.973913 &     0.511374 &         0.969565 \\
+7    &     0.564933 &  0.593572 &     0.947826 &     0.592862 &         0.973913 \\
+8    &     0.605644 &  0.685528 &     0.960870 &     0.708263 &         0.952174 \\
+9    &     0.541434 &  0.729434 &     0.960870 &     0.702398 &         0.978261 \\
+10   &     0.658334 &  0.734010 &     0.965217 &     0.709171 &         0.978261 \\
+\midrule
+mean &     0.625928 &  0.640563 &     0.958261 &     0.632433 &         0.970435 \\
 \bottomrule
 \end{tabular}
 
 
-\subsubsection{Discussion}
+\subsubsection{AudioSet, differences of Spearman correlation between aligned model variant and ILSVRC and independent embeddings with ILSVRC}
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    &  0.005326 &    -0.143094 \\
+2    &  0.049968 &    -0.011059 \\
+3    & -0.212642 &    -0.003892 \\
+4    &  0.035714 &     0.058489 \\
+5    & -0.067457 &    -0.030691 \\
+6    & -0.036766 &    -0.147052 \\
+7    &  0.028640 &     0.027930 \\
+8    &  0.079884 &     0.102619 \\
+9    &  0.188000 &     0.160964 \\
+10   &  0.075676 &     0.050836 \\
+\midrule
+mean &  0.014634 &     0.006505 \\
+\bottomrule
+\end{tabular}
+
+
+\subsection{Discussion}
+
+\subsubsection{Open Images}
+
+For Open Images, using the WordNet comparison metric, it appears that the aligned embeddings are more correlated with human similarity than the independently learned embeddings. The reverse is observed with the MTURK-771 comparison metric, but we do note that this is a very small dataset of only 170 pairs present in both Open Images (out of 120 million pairs) and MTURK-771. The same phenomenon as with MTURK-771 is also observed when comparing with the ILSVRC metric, where the aligned embeddings are less correlated with human judgement than the independently learned embeddings degree of correlation with human judgement. However, the ILSVRC dataset is oddly unbalanced. There are 1000 concepts present in it, of which 124 are different breeds of dog. In fact, 398 of the concepts present in the ILSVRC are different types of animal. This is in keeping with its origins as an ImageNet \todo[inline]{find citation} dataset. If a significant number of the pairs compared are types of animals, and our alignment algorithm is aligning structures at a higher level, the similarity between very specific types of animal may just introduce noise. 
+
 \begin{itemize}
     \item Open Images:
     \begin{itemize}
@@ -231,8 +372,9 @@ mean & -0.020901 &    -0.009821 \\
     \end{itemize}
     \item AudioSet:
     \begin{itemize}
-        \item For AudioSet, the trend is in the other direction: It appears that the aligned embeddings are on average less correlated with human similarity judgement than the independently learned embeddings, as measured by comparing with WordNet. However MMD still has a positive effect on both correlation and accuracy. 
+        \item For AudioSet, the same trend is observed, where aligned embeddings are on average more correlated with human similarity judgement than the independently learned embeddings, as measured by comparing with WordNet. However MMD does not have as much positive effect on correlation. MMD does have a positive effect on accuracy.  
     \end{itemize}
     \item Using MMD as a loss function has the effect of forcing $f(x)$ and $y$ to have the same distribution, and  $g(y)$ and $x$ to have the same distribution. Therefore it is reasonable that it should have a positive effect on alignment accuracy. 
     \item However if MMD is high relative to glove loss, there is more pressure for alignment but less pressure for good embeddings which can result in dysfunctional embeddings where all the concepts in the intersection are clustered together as shown in figure \ref{fig:dysfunctional_cluster}
+    \item The entropies no longer correlate negatively with frequency of concepts, in the aligned embeddings. 
 \end{itemize}
