@@ -25,8 +25,7 @@ AudioSet    & 0.4115 $\pm$ 0.04449 &  0.3986 $\pm$ 0.04391  &      0.3455  $\pm$
 \bottomrule
 \end{tabular}\\
 
-The runs of the independently learned embeddings are much more correlated with each other. The high value very close to 1 means that the similarity matrices (of each run's embeddings with itself) are very similar across runs. This correlation has dropped in the aligned runs, indicating that the output embeddings are less similar to themselves across runs. We can say that the alignment introduces more variation in the embeddings. MMD in particular seems to introduce more variability. 
-
+The runs of the independently learned embeddings aremore correlated with each other, meaning that the similarity matrices (of each run's embeddings with itself) are more similar across runs. This correlation has dropped in the aligned runs, indicating that the output embeddings are less similar to themselves across runs. We can say that the alignment introduces more variation in the embeddings. MMD in particular seems to introduce more variability. 
 
 \subsubsection{Mean Spearman correlation of entropy of a concept with frequency of occurrence of that concept}
 \begin{tabular}{lrrr}
@@ -91,9 +90,9 @@ The following figure shows the results of running the alignment algorithm withou
 \begin{figure}[H]
 \label{fig:dysfunctional_clusters}
     \centering
-    \includegraphics[width=0.95\textwidth]{images/method/probabilistic_aligned/dysfunctional_clusters.png}
+    \includegraphics[width=1.10\textwidth]{images/method/probabilistic_aligned/dysfunctional_clusters.png}
     \caption{
-        The alignment accuracy for this set of embeddings is greater than 97\%. The blue marks denote concepts that are in the intersection of concepts (present in both Open Images and AudioSet). The orange marks denote concepts that are in the 200 most frequent concepts occurring in Open Images. It is immediately visible that the algorithm has clustered concepts in the intersection degenerately; concepts that are in the intersection are more likely to be close to other concepts in the intersection rather than concepts that are semantically close
+        The alignment accuracy for this set of embeddings is greater than 97\%. The blue marks denote concepts that are in the intersection of concepts (present in both Open Images and AudioSet). The orange marks denote concepts that are in the 200 most frequent concepts occurring in Open Images. It is immediately visible that the algorithm has clustered concepts in the intersection degenerately; concepts that are in the intersection are more likely to be close to other concepts in the intersection rather than concepts that are semantically close.
     }
 \end{figure}
 
@@ -169,6 +168,8 @@ ProbabilisticGlove & 0   & openimages &  0.289989 & 0.101333 \\
 \subsubsection{Plots of stability by relative frequency}
 
 The per-item plots show very clearly the distribution of the stability values per rank of concept frequency. For the independently learned embeddings, some concepts have a stability of 1.0 which means that over 10 random seeds, the 5 nearest neighbours of those concepts did not change over the run. 
+
+\cite{WordEmbeddingStability} ran stability analysis for word embeddings across languages. They found that languages with higher morphological complexity tended to be less stable than languages with less complex morphology. The morphological complexity of a language depends on the relationships between the words in that language; more complex relationships means a higher morphological complexity \todo[inline]{find a reference}. If we draw a parallel between the combined (AudioSet + Open Images) embeddings and language, it can be suggested that the combined embeddings have more complex relationships. 
 
 \begin{figure}[H]
     \centering

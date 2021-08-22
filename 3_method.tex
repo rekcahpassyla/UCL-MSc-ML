@@ -70,7 +70,7 @@ The GloVe loss function is reproduced here:
 \begin{equation}
 \label{eq:gloveloss}
 \begin{split}
-L &= \sum_i \sum_j f(X_{ij}) (w_i^T w_j + b_i + b_j - \log X_ij)^2\\
+L_{glove} &= \sum_i \sum_j f(X_{ij}) (\vecw_i^T \vecw_j + b_i + b_j - \log X_{ij})^2\\
 f(x) &= \begin{cases}
 (x/x_{max})^{\alpha}\spaced{if} x \le x_{max}\\
 1\spaced{otherwise}
@@ -80,7 +80,8 @@ f(x) &= \begin{cases}
 
 \begin{itemize}
     \item The values of hyperparameters $\alpha = 0.75$ and $x_{max} = 100$  are set as in the original paper, \cite{pennington2014glove}. 
-    \item The $X_{ij}$ are samples of the current probabilistic embeddings represented by equation \ref{eq:stochemb}. 
+    \item The $\vecw_i$ and $\vecw_j$ are samples of the current probabilistic embeddings represented by equation \ref{eq:stochemb}. 
+    \item The $X_{ij}$ are co-occurrence statistics of the $i$th and $j$th concept
 \end{itemize}
 
 The Pyro library provides backpropagation through the random sampling, as described in \cite{deeplearninggoodfellow} (section 20.9). The next section describes how these probabilistic embeddings were verified. 
@@ -256,9 +257,7 @@ Rank / Seed &1 &2 &3 \\
 \todo[inline]{It is a known weakness of Euclidean embeddings to represent hierarchical concepts. Hyperbolic / Poincare embeddings may be needed. }
 
 
-\todo[inline]{Is it possible to relate the results to the entropies? It is often the more specific terms that have more sensible nearest neighbours. This is the opposite of what I expected when looking at the entropies.}
-
-We observe that often, the more specific terms in the domain have more sensible nearest neighbours. For example, these are the 5 nearest neighbours to the concept ``Roti canai", which is a very specific type of Malaysian flatbread. The nearest neighbours are extremely specific and accurate; ``Roti prata", ``Paratha" and ``Uttapam" are all types of Asian flatbread. 
+We observe that often, the most specific terms in the domain have more sensible nearest neighbours. For example, these are the 5 nearest neighbours to the concept ``Roti canai", which is a very specific type of Malaysian flatbread. The nearest neighbours are extremely specific and accurate; ``Roti prata", ``Paratha" and ``Uttapam" are all types of Asian flatbread. 
 
     \begin{table}[]
     \begin{tabular}{@{}llll@{}}
@@ -281,7 +280,7 @@ Rank / Seed &1 &2 &3 \\
 
 As stated in \cite{ManifoldLearningTheoryAndApplications}, the alignment problem involves finding a transformation of one dataset that maps it to another. 
 
-The $x$- and $y$-embeddings (Open Images and AudioSet respectively) are considered to be aligned if the following holds:
+For this problem, the $x$- and $y$-embeddings (Open Images and AudioSet respectively) are considered to be aligned if the following holds:
 
 \begin{itemize}
     \item For every member of the set $x_{intersect} = y_{intersect}$ of concepts that exist in both domains, the nearest neighbour of mapped concept $f(x_i)$ is the corresponding member $y_i$ in set $y_{intersect}$, and the nearest neighbour of mapped concept $g(y_i)$ is the corresponding member $x_i$ in set $x_{intersect}$. 
@@ -303,18 +302,33 @@ The alignment network comprises the following:
 \todo[inline]{DIAGRAM}
 
 \subsubsection{Full loss function}
+
+
+The full loss function is
+
+\begin{equation}
+\label{eq:fulllossfunction}
+\begin{split}
+L & = L_{glove, x} + L_{glove, y} + L_{cycle, x} + L_{cycle, y} \\
+  & + L_{distance, x-intersect} + L_{distance, y-intersect} \\
+  & + L_{distsim, x-intersect} + L_{distsim, y-intersect}
+\end{split}
+\end{equation}
+
+where the individual components are: 
+
 \begin{itemize}
-    \item The GloVe loss for $x$ as in \ref{eq:gloveloss}. 
-    \item The GloVe loss for $y$ as in \ref{eq:gloveloss}. 
-    \item The cycle consistency loss from x to y: $||g(f(x)) - y||_2$
-    \item The cycle consistency loss from y to x: $||f(g(y)) - x||_2$
-    \item The distance loss between $f(x)$ and $y$: difference between the mapped $x$ embeddings and the current $y$ embeddings, for only the intersection of concepts: $||f(x_{intersect}) - y_{intersect}||_2$
-    \item The difference between $g(y)$ and $x$: the mapped $y$ embeddings and the current $x$ embeddings, for only the intersection of concepts: $||g(y_{intersect}) - x_{intersect}||_2$
-    \item An optional distributional similarity measure between $f(x_{intersect})$ and $y_{intersect}$
-    \item An optional distributional similarity measure between $g(y_{intersect})$ and $x_{intersect}$
+    \item $L_{glove, x}$: The GloVe loss for $x$ as in \ref{eq:gloveloss}. 
+    \item $L_{glove, y}$: The GloVe loss for $y$ as in \ref{eq:gloveloss}. 
+    \item $L_{cycle, x}$: The cycle consistency loss from x to y: $||g(f(x)) - y||_2$
+    \item $L_{cycle, y}$: The cycle consistency loss from y to x: $||f(g(y)) - x||_2$
+    \item $L_{distance, x-intersect}$: The distance loss between $f(x)$ and $y$, for only the intersection of concepts: $||f(x_{intersect}) - y_{intersect}||_2$
+    \item $L_{distance, y-intersect}$: The difference between $g(y)$ and $x$, for only the intersection of concepts: $||g(y_{intersect}) - x_{intersect}||_2$
+    \item $L_{distsim, x-intersect}$: An optional distributional similarity measure between $f(x_{intersect})$ and $y_{intersect}$
+    \item $L_{distsim, y-intersect}$: An optional distributional similarity measure between $g(y_{intersect})$ and $x_{intersect}$
 \end{itemize}
 
-where $x_{intersect}$ and $y_{intersect}$ represent the embeddings in both domains of the intersection of concepts between those domains. 
+and $x_{intersect}$ and $y_{intersect}$ represent the embeddings in both domains of the intersection of concepts between those domains. 
 
 \subsubsection{Other model parameters}
 
@@ -330,16 +344,28 @@ where $x_{intersect}$ and $y_{intersect}$ represent the embeddings in both domai
 In the next sections, the individual items in the loss are discussed more thoroughly.
 
 \subsection{GloVe loss}
-\todo[inline]{Summarise loss section of GloVe paper}
+
+The GloVe loss equation is restated here:
+
+\begin{equation}
+\begin{split}
+L_{glove} &= \sum_i \sum_j f(X_{ij}) (\vecw_i^T \vecw_j + b_i + b_j - \log X_{ij})^2\\
+f(x) &= \begin{cases}
+(x/x_{max})^{\alpha}\spaced{if} x \le x_{max}\\
+1\spaced{otherwise}
+\end{cases}
+\end{split}
+\end{equation}
+
+This is a weighted least-squares problem whose solution should be the set of embeddings where each pair $\vecw_i$, $\vecw_j$ should approximate the co-occurrence statistics $X_{ij}$. 
 
 Experimentally, it was found that the GloVe loss had to be scaled by the ratio of concepts: there are 19996 Open Images concepts and 526 Audioset concepts, so the $x$ glove loss (Open Images) is multiplied by 19996 / 526. Without this, the GloVe loss was not enough to result in sensible clusters. 
-
 
 \subsection{Cycle consistency}
 
 We relate a domain's mapped embeddings (through the $f(x)$ and $g(y)$ MLP layers) to the other domain using what is referred to as cycle-consistency loss. This uses transitivity to self-supervise training; we want $g(f(x))$ to be close to $x$ and $f(g(y))$ to be close to $y$. 
 
-In \cite{CycleGAN}, the reason for requiring cycle consistency is stated: Simply requiring $f(x)$ to be close to $y$ and $g(y)$ to be close to $x$ is insufficient as overfitting can result in a network being able to map an arbitrary set of inputs to an arbitrary set of outputs. In \cite{CycleGAN}, the L1 norm is used, in this experiment we use the L2 norm as we do not want a sparsity constraint. 
+In \cite{CycleGAN}, the reason for requiring cycle consistency is stated: Simply requiring $f(x)$ to be close to $y$ and $g(y)$ to be close to $x$ is insufficient as overfitting can result in a network being able to map an arbitrary set of inputs to an arbitrary set of outputs. In \cite{CycleGAN}, the L1 norm is used, in this experiment we use the L2 norm as we do not want a sparsity constraint imposed on the embeddings. 
 
 Thus the cycle consistency loss takes the following form:
 
@@ -349,8 +375,9 @@ L_{cycle} &= E_x ||f(g(x)) - x||_2 + E_y ||g(f(y) - y||_2
 \end{split}
 \end{equation}
 
-This loss is also used in other alignment architectures, for example \cite{magan} (in which it is known as the reconstruction loss). 
+The analogous equation for $L_{cycle, y}$ has the $x-$ and $y-$ items switched. 
 
+This loss is also used in other alignment architectures, for example \cite{magan} (in which it is known as the reconstruction loss). 
 
 \subsection{Distance loss}
 
@@ -361,31 +388,22 @@ L_{distance} &= E_x||f(x) - y||_2 + E_y||g(y) - x||_2
 \end{split}
 \end{equation}
 
-\todo[inline]{There is something about this in the MAGAN paper \cite{magan}}
+The Manifold Alignment GAN (MAGAN \cite{magan}) used this loss to guard against the generators (the mapping MLPs in our model) learning a mapping that simply superimposed the manifolds without actually aligning the points, though they use a different formulation for this loss. 
 
-\subsection{Distributional similarity}
+\subsection{Distributional similarity measure}
 
 We would like the distribution of $f(x)$ to be similar to the distribution of $y$, and that of $g(y)$ to be similar to that of $x$. For the intersection of concepts, this means that the distribution of $f(x_{intersect})$ should be similar to $y_{intersect}$, and the distribution of $g(y_{intersect})$ should be similar to $x_{intersect}$. There exist various measures by which two distributions can be compared; for these to be used as loss functions for neural network training, they should generate a scalar value that is minimised when the distributions are identical. 
-
-\todo[inline]{Introduce distance measures?}
 
 \subsubsection{Maximum mean discrepancy}
 
 The maximum mean discrepancy (MMD) statistic is introduced in \cite{MMDGretton} as a difference in feature means of the two distributions, where the features are obtained by applying a kernel function to the two samples. Under certain conditions met by the kernel function, the MMD between samples of 2 distributions is 0 if the distributions are identical. Summarising the full theory that can be found in \cite{MMDGretton}, the following conditions must hold:
 
 \begin{itemize}
-    \item The kernel must be a characteristic kernel: If the inputs are random variables $X$ with domain $\Omega$ and distribution $P$, there is a one to one mapping between the mean value in feature space and the distributions. \cite{KernelMeanEmbeddingReview} \todo[inline]{ADD EQUATIONS? Unclear how much proof is needed}
+    \item The kernel must be a characteristic kernel: If the inputs are random variables $X$ with domain $\Omega$ and distribution $P$, there is a one to one mapping between the mean value in feature space and the distributions. \cite{KernelMeanEmbeddingReview} 
     \item That is, each value for the mean in feature space maps to a different possible distribution. 
     \item An intuitive way of looking at this is that the kernel function must be "rich enough" to represent all possible distributions. A known characteristic kernel function that is commonly used is the Gaussian kernel function $k(\vecx, \vecy) = \exp(-\alpha ||\vecx - \vecy||_2^2)$, and this is what we use in our experiments. 
-    \item $\alpha$ of 0.01 was used for both domains. This value was chosen because it is close to the median of the pairwise distances \todo[inline]{Find citation for median heuristic} which is a good heuristic for convergence. 
+    \item $\alpha$ of 0.01 was used for both domains. This value was chosen because it is close to $\frac{1}{2 \sigma^2}$ where $\sigma$ is the median of the pairwise distances, which is a good heuristic for convergence \cite{Garreau2017LargeSA} . 
 \end{itemize}
-
-Other random bits
-
-\begin{itemize}
-    \item MMD with a characteristic kernel will be 0 if the distributions are the same and certain conditions are met of the embedding space. 
-    \item MMD is like infinite moment matching, if a characteristic kernel is used. 
-\end{itemize} 
 
 Given the following:
 
@@ -407,10 +425,8 @@ MMD (k, x, y) &= \frac{1}{m(m-1)} \sumim \sum_{j \neq i}^m k(\vecx_i, \vecx_j) +
 
 It can be seen that this is the sum of the within-distribution similarities, less the sum of the cross-distributional similarities. 
 
-(Can include more items described in http://ssa.cf.ac.uk/big-data/slides/Gretton-MMD-TrainingNetworks.pdf)
+%(Can include more items described in http://ssa.cf.ac.uk/big-data/slides/Gretton-MMD-TrainingNetworks.pdf)
 
-(Empirical MMD can be negative)
-
-The implementation from the \texttt{torch-two-sample / https://torch-two-sample.readthedocs.io} library \cite{torchtwosample} was used.  
+The implementation from the \texttt{torch-two-sample} \footnote{\texttt{https://torch-two-sample.readthedocs.io}} library \cite{torchtwosample} was used.  
 
 
