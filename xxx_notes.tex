@@ -88,6 +88,240 @@
         \end{itemize}
     \end{itemize}
     
+    
+    
+\section{Raw data for Spearman correlations with human similarity datasets}
+    
+    
+
+\subsubsection{Comparison with MTURK-771}
+
+\todo[inline]{Condense all tables into one}
+
+
+Only Open Images was compared with this dataset, as there were too few pairs overlapping with AudioSet (only three). 
+
+\subsubsection{Open Images, Spearman correlation with MTURK-771 similarity}\\
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.357040 &  0.305814 &     0.947826 &     0.331085 &         0.947826 \\
+2    &     0.342876 &  0.271306 &     0.956522 &     0.296354 &         0.982609 \\
+3    &     0.375564 &  0.338173 &     0.934783 &     0.287192 &         0.956522 \\
+4    &     0.342911 &  0.299614 &     0.952174 &     0.289880 &         0.965217 \\
+5    &     0.357850 &  0.255958 &     0.947826 &     0.225208 &         0.960870 \\
+6    &     0.373989 &  0.308962 &     0.952174 &     0.271217 &         0.973913 \\
+7    &     0.347433 &  0.296559 &     0.965217 &     0.292202 &         0.965217 \\
+8    &     0.343246 &  0.284002 &     0.969565 &     0.283377 &         0.952174 \\
+9    &     0.340476 &  0.279059 &     0.956522 &     0.271877 &         0.956522 \\
+10   &     0.366640 &  0.267160 &     0.960870 &     0.283802 &         0.952174 \\
+\midrule
+mean &     0.354803 &  0.290661 &     0.954348 &     0.283219 &         0.961304 \\
+\bottomrule
+\end{tabular}\\
+
+
+\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and MTURK-771 and independent embeddings}
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    & -0.051227 &    -0.025955 \\
+2    & -0.071571 &    -0.046522 \\
+3    & -0.037390 &    -0.088372 \\
+4    & -0.043297 &    -0.053031 \\
+5    & -0.101893 &    -0.132642 \\
+6    & -0.065027 &    -0.102772 \\
+7    & -0.050874 &    -0.055231 \\
+8    & -0.059244 &    -0.059869 \\
+9    & -0.061417 &    -0.068599 \\
+10   & -0.099481 &    -0.082839 \\
+\midrule
+mean & -0.064142 &    -0.071583 \\
+\bottomrule
+\end{tabular}\\
+
+
+
+\subsection{Comparison with WordNet}
+
+\subsubsection{Open Images, Spearman correlation with WordNet similarity}
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.204645 &  0.229008 &     0.947826 &     0.228036 &         0.947826 \\
+2    &     0.195614 &  0.221148 &     0.956522 &     0.230173 &         0.982609 \\
+3    &     0.199725 &  0.239952 &     0.934783 &     0.239973 &         0.956522 \\
+4    &     0.210023 &  0.233182 &     0.952174 &     0.228500 &         0.965217 \\
+5    &     0.190570 &  0.225954 &     0.947826 &     0.226141 &         0.960870 \\
+6    &     0.206630 &  0.238630 &     0.952174 &     0.236737 &         0.973913 \\
+7    &     0.207851 &  0.229461 &     0.965217 &     0.238660 &         0.965217 \\
+8    &     0.215203 &  0.217090 &     0.969565 &     0.218335 &         0.952174 \\
+9    &     0.216922 &  0.223884 &     0.956522 &     0.233538 &         0.956522 \\
+10   &     0.206950 &  0.225371 &     0.960870 &     0.230410 &         0.952174 \\
+\midrule
+mean &     0.205413 &  0.228368 &     0.954348 &     0.231050 &         0.961304 \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and WordNet and independent embeddings} \\
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    &  0.024363 &     0.023391 \\
+2    &  0.025535 &     0.034559 \\
+3    &  0.040227 &     0.040248 \\
+4    &  0.023160 &     0.018477 \\
+5    &  0.035384 &     0.035571 \\
+6    &  0.032000 &     0.030108 \\
+7    &  0.021610 &     0.030809 \\
+8    &  0.001887 &     0.003131 \\
+9    &  0.006962 &     0.016616 \\
+10   &  0.018421 &     0.023459 \\
+\midrule
+mean &  0.022955 &     0.025637 \\
+\bottomrule
+\end{tabular}
+
+
+\subsubsection{AudioSet, Spearman correlation with WordNet similarity}
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.138980 &  0.162728 &     0.947826 &     0.152753 &         0.965217 \\
+2    &     0.132803 &  0.130027 &     0.969565 &     0.147193 &         0.982609 \\
+3    &     0.157127 &  0.174757 &     0.956522 &     0.133395 &         0.978261 \\
+4    &     0.146678 &  0.148297 &     0.956522 &     0.168750 &         0.956522 \\
+5    &     0.116176 &  0.151164 &     0.943478 &     0.152322 &         0.969565 \\
+6    &     0.144309 &  0.134435 &     0.973913 &     0.125409 &         0.969565 \\
+7    &     0.149543 &  0.133959 &     0.947826 &     0.169722 &         0.973913 \\
+8    &     0.140360 &  0.182683 &     0.960870 &     0.127695 &         0.952174 \\
+9    &     0.147353 &  0.135669 &     0.960870 &     0.187408 &         0.978261 \\
+10   &     0.149795 &  0.165782 &     0.965217 &     0.142835 &         0.978261 \\
+\midrule
+mean &     0.142313 &  0.151950 &     0.958261 &     0.150748 &         0.970435 \\
+\bottomrule
+\end{tabular}
+
+
+\subsubsection{AudioSet, differences of Spearman correlation between aligned model variant and WordNet and independent embeddings with WordNet}
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    &  0.023748 &     0.013773 \\
+2    & -0.002776 &     0.014390 \\
+3    &  0.017631 &    -0.023732 \\
+4    &  0.001618 &     0.022072 \\
+5    &  0.034988 &     0.036146 \\
+6    & -0.009875 &    -0.018901 \\
+7    & -0.015584 &     0.020179 \\
+8    &  0.042323 &    -0.012665 \\
+9    & -0.011684 &     0.040055 \\
+10   &  0.015986 &    -0.006961 \\
+\midrule
+mean &  0.009637 &     0.008436 \\
+\bottomrule
+\end{tabular}
+
+\subsection{Comparison with ILSVRC}
+
+\subsubsection{Open Images, Spearman correlation with ILSVRC similarity}
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.523743 &  0.493222 &     0.947826 &     0.488418 &         0.947826 \\
+2    &     0.470860 &  0.460144 &     0.956522 &     0.457864 &         0.982609 \\
+3    &     0.482953 &  0.486438 &     0.934783 &     0.433406 &         0.956522 \\
+4    &     0.514398 &  0.531787 &     0.952174 &     0.482189 &         0.965217 \\
+5    &     0.504501 &  0.465994 &     0.947826 &     0.456137 &         0.960870 \\
+6    &     0.541152 &  0.472602 &     0.952174 &     0.450753 &         0.973913 \\
+7    &     0.506350 &  0.468013 &     0.965217 &     0.446900 &         0.965217 \\
+8    &     0.553240 &  0.458478 &     0.969565 &     0.468173 &         0.952174 \\
+9    &     0.507937 &  0.463128 &     0.956522 &     0.438866 &         0.956522 \\
+10   &     0.531030 &  0.463582 &     0.960870 &     0.451747 &         0.952174 \\
+\midrule
+mean &     0.513617 &  0.476339 &     0.954348 &     0.457445 &         0.961304 \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and ILSVRC and independent embeddings} \\
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    & -0.030521 &    -0.035326 \\
+2    & -0.010716 &    -0.012996 \\
+3    &  0.003485 &    -0.049548 \\
+4    &  0.017389 &    -0.032209 \\
+5    & -0.038507 &    -0.048364 \\
+6    & -0.068550 &    -0.090399 \\
+7    & -0.038337 &    -0.059450 \\
+8    & -0.094763 &    -0.085067 \\
+9    & -0.044809 &    -0.069071 \\
+10   & -0.067448 &    -0.079283 \\
+\midrule
+mean & -0.037278 &    -0.056171 \\
+\bottomrule
+\end{tabular}
+
+\subsubsection{AudioSet, Spearman correlation with ILSVRC similarity}
+
+\begin{tabular}{lrrrrr}
+\toprule
+{} &  independent &   aligned &  aligned\_acc &  aligned\_mmd &  aligned\_mmd\_acc \\
+\midrule
+1    &     0.634553 &  0.683402 &     0.947826 &     0.502208 &         0.965217 \\
+2    &     0.584539 &  0.686640 &     0.969565 &     0.650786 &         0.982609 \\
+3    &     0.646683 &  0.427680 &     0.956522 &     0.617364 &         0.978261 \\
+4    &     0.560294 &  0.609964 &     0.956522 &     0.648891 &         0.956522 \\
+5    &     0.562203 &  0.513384 &     0.943478 &     0.578213 &         0.969565 \\
+6    &     0.630897 &  0.609099 &     0.973913 &     0.503820 &         0.969565 \\
+7    &     0.539494 &  0.563158 &     0.947826 &     0.546268 &         0.973913 \\
+8    &     0.552983 &  0.674972 &     0.960870 &     0.681851 &         0.952174 \\
+9    &     0.523634 &  0.718003 &     0.960870 &     0.680956 &         0.978261 \\
+10   &     0.607010 &  0.717317 &     0.965217 &     0.698815 &         0.978261 \\
+\midrule
+mean &     0.584229 &  0.620362 &     0.958261 &     0.610917 &         0.970435 \\
+\bottomrule
+\end{tabular}
+
+
+\subsubsection{AudioSet, differences of Spearman correlation between aligned model variant and ILSVRC and independent embeddings with ILSVRC}
+
+
+\begin{tabular}{lrr}
+\toprule
+{} &   aligned &  aligned\_mmd \\
+\midrule
+1    &  0.048850 &    -0.132345 \\
+2    &  0.102101 &     0.066247 \\
+3    & -0.219003 &    -0.029319 \\
+4    &  0.049670 &     0.088598 \\
+5    & -0.048820 &     0.016010 \\
+6    & -0.021799 &    -0.127078 \\
+7    &  0.023664 &     0.006774 \\
+8    &  0.121990 &     0.128868 \\
+9    &  0.194369 &     0.157321 \\
+10   &  0.110307 &     0.091806 \\
+\midrule
+mean &  0.036133 &     0.026688 \\
+\bottomrule
+\end{tabular}
+    
 \section{Measures of statistical distance}
 
 \subsubsection{Energy distance}

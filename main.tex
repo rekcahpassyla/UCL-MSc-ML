@@ -13,21 +13,27 @@
 \usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{tabulary}
+\usepackage{multirow}
+\usepackage{bbm}
+\usepackage{mathrsfs}
 
-%\usepackage[
-%backend=biber,
-%style=acm,
-%citestyle=acm
-%]{biblatex}
+% very basic, number only
+%\usepackage{biblatex}
 %\addbibresource{refs.bib}
 
-%\usepackage[
-%style{acm}
-%]{biblatex}
+
+% Goldstone and Rogosky 2002
+%\usepackage[backend=biber,
+%style=numeric,
+%citestyle=authoryear]{biblatex} 
 %\addbibresource{refs.bib}
 
-\usepackage{biblatex}
+% [GR02]
+\usepackage[backend=biber,
+style=alphabetic,
+citestyle=alphabetic]{biblatex} 
 \addbibresource{refs.bib}
+
 
 \usepackage{todonotes}
 \input{defs.tex}
@@ -36,12 +42,12 @@
 
 \title{  	{ \includegraphics[scale=.5]{ucl_logo.png}}\\
 {{\Huge Semi-supervised Learning Of Jointly Aligned Concept Embeddings}}\\
-{\large There Is No Optional Subtitle Yet}\\
+%{\large There Is No Optional Subtitle Yet}\\
 		}
 \date{Submission date: Day Month Year}
 \author{Petra Chong\thanks{
 {\bf Disclaimer:}
-This report is submitted as part requirement for the MY DEGREE at UCL. It is
+This report is submitted as part requirement for the MSc in Machine Learning at UCL. It is
 substantially the result of my own work except where explicitly indicated in the text.
 The report may be freely copied and distributed provided the source is explicitly acknowledged.
 }
@@ -49,19 +55,18 @@ The report may be freely copied and distributed provided the source is explicitl
 MSc Machine Learning\\ \\
 Professor Bradley Love}
 
-%\begin{document}
  
 \onehalfspacing
 \maketitle
 \begin{abstract}
-Summarise your report concisely.
+We are interested in the problem of learning statistical representations of concepts from multimodal data, as this mimics the way that humans learn. Choosing to represent concepts as continuous vector embeddings, we use the GloVe algorithm to learn probabilistic embeddings from co-occurrence statistics of concepts in the Open Images and AudioSet datasets. We begin by learning embeddings for each modality independently, as a baseline, then we investigate an algorithm for jointly aligning probabilistic GloVe embeddings with no post-processing. We examine the use of the Maximum Mean Discrepancy distributional similarity measure to improve alignment. We analyse the quality of the resulting embeddings by comparison with three human-curated datasets, and we find that alignment increases embedding quality when compared to the largest of these datasets. This supports the findings of other studies in multi-task learning, which conclude that learning from multiple input streams results in models that generalise better. 
 \end{abstract}
 
-
+%\input{ack.tex}
 \tableofcontents
 \setcounter{page}{1}
 
-\input{0_todo.tex}
+%\input{0_todo.tex}
 
 \input{1_intro.tex}
 
@@ -71,11 +76,13 @@ Summarise your report concisely.
 
 \input{4_results.tex}
 
-\input{5_conclusions_further}
+\input{5_conclusions_further.tex}
 
 %\input{xxx_notes}
 
 \appendix
+
+\input{A_appendix.tex}
 
 
 %\bibliographystyle{apalike}

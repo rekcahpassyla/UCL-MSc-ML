@@ -1,5 +1,54 @@
 \chapter{Appendix}
 
-\section{Measures of statistical distance that were tried}
+\section{Graph-based measures of statistical distance}
+\label{appendix:graphbased}
+We introduce the following notation, which differs from that in \cite{torchtwosample} to avoid overloading previously defined terms in this document. 
 
+\begin{itemize}
+    \item $P$ is the distribution from which the points $X = \{\vecx_1, ..., \vecx_n \}$ are drawn.
+    \item $Q$ is the distribution from which the points $Y = \{\vecy_1, ..., \vecy_n \}$ are drawn.
+    \item $H(X) = (X, E)$ is the directed graph defined over the vertex set $X = \{\vecx_1, ..., \vecx_n \}$, with edges $E$.
+    \item $J(Y) = (Y, F) $ is the directed graph defined over the vertex set $Y = \{\vecy_1, ..., \vecy_m \}$, with edges $F$. 
+    \item These graphs are weighted with the distance function $d(\vecx, \vecx') = || \vecx - \vecx'||$, and we will denote with $d(e)$ the weight of the edge $e$ using distance function $d$. 
+    \item For a labelling of vertices $\pi: X \rightarrow \{1, 2\}$ and any edge $e$ whose vertices $i$ and $j$ are adjacent, define $\Delta_{\pi}(e)$ to be 1 if $e$'s end points have different labels under the mapping $\pi$. 
+\end{itemize}
 
+The generic framework for the graph tests follows these steps:
+
+\begin{enumerate}
+    \item Let $Z$ be the union of the samples $X$ and $Y$ and let $K(Z)$ be the graph defined over all points. Define a mapping $\pi^* : Z \rightarrow \{1, 2\}$ such that $\pi^*(X) = 1$ and $\pi^*(Y) = 2$.
+    \item Use an algorithm $A$ to choose a subset $U^* = A(K(Z))$ of the edges of $Z$, the idea being that this algorithm should encode some sort of neighbourhood structure.
+    \begin{itemize}
+        \item The Friedman-Rafsky test (CITE) uses the minimum spanning tree of $H(X)$ as the algorithm for selecting the neighbourhood structure $U^*$. 
+
+        \item The k-nearest neighbours test adds an edge $e$ to $U^*$ if the starting point is one of the k nearest neighbours of the end point under the distance measure $d$.
+    \end{itemize}
+    \item The statistic $T_{\pi^*}(U^*) = \sum_{e \in U^*} \Delta_{\pi^*} (e)$ defines how many edges in $U^*$ join points from $X$ and $Y$. 
+    \item If $T_{\pi^*}$ is high, then many edges join points from $X$ and $Y$, and $X$ and $Y$ are highly aligned. When using this statistic as a loss function, the negative of this must be minimised.
+\end{enumerate}
+
+In order to use $T_{\pi^*}$ in a loss function with backpropagation, we need to be able to calculate the derivatives $\frac{\partial T}{\partial \vecx_i}$ which normally do not exist. In \cite{torchtwosample} the strategy cited is to smooth these functions to make them continuously differentiable by turning them into expectations of probabilistic models in the exponential family. 
+
+We can express the optimal neighbourhood mapping $U^*$ as 
+
+\begin{equation}
+\begin{split}
+U^* &= \argmin{U \subseteq E} \sum_{e \in U} d(e) \spaced{such that} v(U) = 1 \\
+&\spaced{and further define} \vecd \spaced{to be the vector of edge weights} d(e). 
+\end{split}
+\end{equation}
+
+where $v: 2^{|E|} \rightarrow \{0, 1 \}$ is a mapping indicating if the set of edges is valid under the constraints of algorithm $A$, for example if each vertex has $k$ neighbours for the KNN test, or if the set of edges forms a valid set of minimum spanning trees in the Friedman-Rafsky test case. 
+
+The aim is to find a probability distribution over $U$ whose expectation can be used in place of $T_{\pi^*}$. Without proof, we state the result from \cite{torchtwosample} that the following exponential family function suffices:
+
+\begin{equation}
+\label{eq:smoothed}
+\begin{split}
+P(U | \vecd / \lambda) &= \exp\Big[-\sum_{e \in U} d(e) / \lambda - A(-\vecd / \lambda \Big] v(U)
+\end{split}
+\end{equation}
+
+where $\lambda$ is a hyperparameter (the ``temperature parameter") and $A(-\vecd / \lambda)$ is the log-partition function  that normalises the distribution. $U^*$ is thus a maximum a posteriori configuration for $P(U | \vecd/\lambda)$, and as $\lambda$ tends to 0,  $P(U | \vecd/\lambda)$ will tend to the MAP estimate. 
+
+If we use the expectation $E_{U}[T_{\pi^*}(U)]$ in place of the original statistic $T_{\pi^*(U^*)}$, since $P(U)$ (\ref{eq:smoothed}) is a member of the exponential family, we can compute its first and second moments, which lead to the values of the smoothed statistic as well as its derivative. These functions can now be used as loss functions of which minimisation corresponds to the two inputs having greater graph similarity. 
