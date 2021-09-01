@@ -11,7 +11,7 @@ Our input data comprises datasets from two modalities.
 
 In total there are 20522 labelled concepts; 19996 from Open Images and 526 from AudioSet, with an intersection of 230 concepts present in both datasets. 
 
-The concept labellings are both human- and machine-generated. They are not always completely accurate. For example, the image in Figure \ref{fig:tortoiseseaturtle} below has been labelled, by a human annotator, with the terms ``Tortoise" and ``Sea turtle". As these two terms represent distinct species, the tagged object cannot be both. In the case of this image it is presumably because human annotator could not determine the type of animal represented by the statue next to the women. This pattern persists throughout the image library, where images are tagged with labels that are clearly related, but not always accurate. The images are consistently mis-labelled; the ``Tortoise" / ``Sea turtle" mismatch appears many times. For the purposes of this study this is less significant, but if we were trying to relate the relationships found by the experiments back to real-life data, it might be important. Nonetheless, the co-occurrence statistics do capture the relationships that humans think exist, even if these are inaccurate. It is a philosophical point as to whether these are accurate in a different way- that of capturing the human judgement of these relationships, even if that judgement is factually incorrect. They capture an association that humans have for these concepts, even if that association is faulty. 
+The concept labellings are both human- and machine-generated. They are not always completely accurate. For example, the image in Figure \ref{fig:tortoiseseaturtle} below has been labelled, by a human annotator, with the terms ``Tortoise" and ``Sea turtle". As these two terms represent distinct species (one land dwelling and the other sea dwelling), the tagged object cannot be both. In the case of this image it is presumably because human annotator could not determine the type of animal represented by the statue next to the woman. This pattern persists throughout the image library, where images are tagged with labels that are clearly related, but not always accurate. The images are consistently mis-labelled; the ``Tortoise" / ``Sea turtle" mismatch appears many times. For the purposes of this study this is less significant, but if we were trying to relate the relationships found by the experiments back to real-life data, it might be important. Nonetheless, the co-occurrence statistics do capture the relationships that humans think exist, even if these are inaccurate. It is a philosophical point as to whether these are accurate in a different way- that of capturing the human judgement of these relationships, even if that judgement is factually incorrect. They capture an association that humans have for these concepts, even if that association is faulty. 
 
 \begin{figure}[H]
 \label{fig:tortoiseseaturtle}
@@ -22,7 +22,7 @@ The concept labellings are both human- and machine-generated. They are not alway
     }
 \end{figure}
 
-In this experiment, there is no link between any concepts to any entities in the real world; they are not externally grounded in any way. The embeddings are learned completely independently of their associated labels; the embeddings are numbered by the index they occur in the co-occurrence data. For example, the first index in the Open Images co-occurrence matrix is for ``Sprenger's tulip", a type of flower, which has label \texttt{/m/0100nhbf}, but neither of these labels (the human name or the machine ID) are used anywhere in the learning system. Any meaning that we ascribe to relationships between embeddings must be inferred from later re-mapping the indexes back to the concept names / label IDs. If the algorithm learns a system of embeddings where the concepts with indexes 15268 and 5296 are nearest neighbours in embedding space, we will not know until we perform this re-mapping that the concepts 15268 and 5296 are ``Coffee" and ``Tea" (in which case they are related, and our algorithm is fit for purpose), or that they are ``Sprenger's tulip" and ``Ferret" (in which case they are not related). 
+In this experiment, there is no link between any concepts to any entities in the real world; they are not externally grounded in any way. The embeddings are learned completely independently of their associated labels; the embeddings are numbered by the index they occur in the co-occurrence data. For example, the first index in the Open Images co-occurrence matrix is for ``Sprenger's tulip", a type of flower, which has label \texttt{/m/0100nhbf}, but neither of these strings (the human name or the machine ID) are used anywhere in the learning system. Any meaning that we ascribe to relationships between embeddings must be inferred from later re-mapping the indexes back to the concept names / label IDs. If the algorithm learns a system of embeddings where the concepts with indexes 15268 and 5296 are nearest neighbours in embedding space, we will not know until we perform this re-mapping that the concepts 15268 and 5296 are ``Coffee" and ``Tea" (in which case they are related, and our algorithm is fit for purpose), or that they are ``Sprenger's tulip" and ``Ferret" (in which case they are not related). 
 
 The co-occurrence matrices for the Open Images and AudioSet datasets, as well as the concept name to label mapping files, make up the dataset for these experiments. This dataset should represent the statistical distribution of co-occurrence of concepts in the two modalities. 
 
@@ -95,7 +95,7 @@ The probabilistic embeddings were validated as follows:
     \item No hyperparameter tuning was done; as this is not a supervised learning problem, we measure convergence only by the decrease in GloVe loss (equation \ref{eq:gloveloss}) as there is no validation set to cross-check with. 
 \end{itemize}
 
-The output of this training are 10 sets of probabilistic embeddings (parametrised by their mean and variance) for each domain (Open Images / AudioSet). These embeddings are doubly stochastic; one source is stochasticity in the learning algorithm leading to 2 runs with different seeds converging to different mean embeddings, and the other is caused by each embedding being a sample from a multivariate Gaussian distribution. 
+The output of this training are 10 sets of probabilistic embeddings (parametrised by their mean and variance) for each domain (Open Images / AudioSet). These embeddings are stochastic in two senses; one source is stochasticity in the learning algorithm leading to 2 runs with different seeds converging to different mean embeddings, and the other is caused by each embedding being a sample from a multivariate Gaussian distribution. 
 
 It is interesting that AudioSet needed many more epochs to converge. This is consistent with an earlier point mentioned in \cite{GOLDSTONE2002295} that systems with more concepts are easier to learn as they are more constrained. 
 
@@ -124,7 +124,7 @@ This is a qualitative analysis only intended to confirm that the implementation 
 \end{figure}
 
 
-The following plots of the Open Images top 300 concepts (by frequency) t-SNE plots annotated to show some of the clusters, for random seeds 1 and 2, show that roughly the same concepts cluster for each run. They also reveal a characteristic of our alignment problem: The cluster arrangements relative to each other across runs are not consistent. Ideally, we would like the different clusters to have the same spatial arrangement across runs. As described in \cite{SHEPARD19701}, we would like to identify second order isomorphisms in the data; not just the clusters, but the relationship between the clusters. 
+The following plots of the Open Images top 300 concepts (by frequency) t-SNE plots annotated to show some of the clusters, for random seeds 1 and 2, show that roughly the same concepts cluster for each run. They also reveal a characteristic of our alignment problem: The cluster arrangements relative to each other across runs are not consistent. Ideally, we would like the different clusters to have the same spatial arrangement across runs. As described in \cite{SHEPARD19701}, we would like to identify second order isomorphisms in the data; not just the clusters, but the relationship between the clusters. The variability from run to run suggests that the available data does not uniquely identify a single system of second-order isomorphisms. We attempt to inject additional constraints in a later section.
 
 \begin{figure}[H]
     \centering
@@ -155,7 +155,7 @@ This is done as follows for each domain (Open Images and AudioSet separately):
     \item The dot products are calculated between the learned $\mu$ (the mean of the stochastic embeddings) for every pair of concepts. The stochastic embeddings can be thought of as distributions about a mean, where the mean would be the embedding learned in the deterministic case. 
     \item This gives a similarity matrix between each embedding and itself, for each seed. 
     \item The correlation between the values of each run's similarity matrix with every other run was computed, and the mean value taken. A high value should indicate that over runs with different seeds, the similarity of a given pair of concepts is consistent. If a pair is similar in one run, it should be similar in another run and vice versa. 
-    \item The average cross-correlation was $ 0.4115 \pm 0.04449$ for AudioSet and $0.5895 \pm 0.04863$ for OpenImages. 
+    \item The average cross-correlation was $ 0.412 \pm 0.044$ for AudioSet and $0.590 \pm 0.049$ for OpenImages. 
 % /home/petra/spond/spond/experimental/glove/results/audioset/ProbabilisticGlove/audioset_analytics.hdf5
 % /home/petra/spond/spond/experimental/glove/results/openimages/ProbabilisticGlove/openimages_analytics.hdf5
 \end{itemize}
@@ -185,9 +185,11 @@ By examining histograms of the entropies of each run (with different seeds), we 
     % generated by analyse.py 
 \end{figure}
  
-The histograms indicate that the distributions of the variances of learned embeddings are stable even if the random seed is changed. The AudioSet graph is less smooth because there are only 526 concepts vs. 19996 in Open Images. The Open Images distribution is very slightly bimodal with a very faint peak centered around 7 on the y-axis. 
+The histograms indicate that the distributions of the variances of learned embeddings are stable even if the random seed is changed. The AudioSet graph is less smooth because there are only 526 concepts versus 19996 in Open Images. The Open Images distribution is very slightly bimodal with a very faint peak centered around 7 on the y-axis. 
+
+\todo[inline]{Add box plots as per JJW comment: "I'd be tempted to produce a sibling graph for each of these two that is a box plot, given that there are a finite number of categories (10).  i.e. put 1 to 10 on the x-axis, and have a box plot for each.  Then it's easy to confirm that the median/quartiles are very similar.  This might especially help with the audio set."}
  
-We expect that concepts with lower incidence (that are present fewer times in the universe of images / audio clips) should have a higher variance, and therefore higher entropy. This is confirmed by calculating the Spearman correlation of the entropies with the number of incidences of a concept. For AudioSet, this results in a mean Spearman correlation of -0.3465 over 10 random seeds, and for Open Images this is a mean of -0.3369 over 10 random seeds. 
+We expect that concepts with lower incidence (that are present fewer times in the universe of images / audio clips) should have a higher variance, and therefore higher entropy. This is confirmed by calculating the Spearman correlation of the entropies with the number of incidences of a concept. For AudioSet, this results in a mean Spearman correlation of -0.35 over 10 random seeds, and for Open Images this is a mean of -0.34 over 10 random seeds. 
 
 % audioset
 %In [8]: det_learned_corr.mean()
@@ -213,9 +215,11 @@ We expect that concepts with lower incidence (that are present fewer times in th
 % For the following, run inspect_results.py and call mostalike to dump top 5 neighbours for a few seeds
 % then 
 
+\todo[inline]{Add mean cosine similarity as well as per BR comment: "Ideally we would  also add Pearson correlation results for `expected cosine similarity' after the entropy results."}
+
 \subsubsection{Unexpected clustering behaviour for some concepts depending on hierarchy}
 
-The table below shows the 3 nearest neighbours (in the rows) to the concept ``Cat" in the Open Images domain, over five seeds. The distance metric is Euclidean distance. They do not appear to be very related to the concept of ``Cat".
+The table below shows the 5 nearest neighbours (in the rows) to the concept ``Cat" in the Open Images domain, over 3 seeds. The distance metric is Euclidean distance. They do not appear to be very related to the concept of ``Cat".
 
 \begin{table}[H]
 \centering
@@ -268,15 +272,17 @@ Rank / Seed &1 &2 &3 \\
 \centering
 \end{table}
 
-It  is a known weakness of embeddings constructed using Euclidean distance measures that they are less able to represent hierarchical structures, particularly if the embedding space is of low dimension. \cite{NNAnalysisPsychologicalSpaces} found that there is quite a restrictive upper bound on the number of points with the same nearest neighbour when the points lie in Euclidean space. When there is a hierarchical semantic structure to the data, intermediate nodes that correspond to more abstract types should have many nearest neighbours. Because of this restrictive upper bound, when embeddings in Euclidean space are learned, fewer of those nearest neighbours will be able to be captured. \cite{PoincareEmbeddings} describes a method of learning embeddings in hyperbolic space (with constant negative curvature) that may be better able to handle this. 
+It  is a known weakness of embeddings constructed using Euclidean distance measures that they are less able to represent hierarchical structures, particularly if the embedding space is of low dimension. \cite{NNAnalysisPsychologicalSpaces} found that there is quite a restrictive upper bound on the number of points with the same nearest neighbour when the points lie in Euclidean space. When there is a hierarchical semantic structure to the data, intermediate nodes that correspond to more abstract types should have many nearest neighbours. Because of this restrictive upper bound, when embeddings in Euclidean space are learned, fewer of those nearest neighbours will be able to be captured. \cite{PoincareEmbeddings} describes a method of learning embeddings in hyperbolic space (with constant negative curvature) that may be better able to handle this, but is outside the scope of this work.
 
 \section{Alignment}
 
 \subsection{Definition of alignment for this problem}
 \label{section:alignmentdef}
-As stated in \cite{ManifoldLearningTheoryAndApplications}, the alignment problem involves finding a transformation of one dataset that maps it to another. 
+As stated in \cite{ManifoldLearningTheoryAndApplications}, the generic alignment problem involves finding a transformation of one domain that maps it to another domain. In this project we also wish to learn embeddings for the domains simultaneously along with the respective mappings. Since the learning of GloVe embeddings involves stochastic gradient descent over a complex loss surface, it will be highly subject to local minima. Further constraining the problem should help to decrease the occurrence of local optima and arrive at a better global solution. 
 
-For this problem, the $x$- and $y$-embeddings (Open Images and AudioSet respectively) are considered to be aligned if the following holds:
+We aim to achieve the type of alignment described in Figure \ref{fig:alignment2}, where we learn a mapping directly from one domain to another, rather than mapping both domains to an intermediate space. This is because at this stage, we cannot make any assumptions about the manifold that the data lie on. We used 6 dimensions based on previous analysis.  
+
+Therefore, for this problem, the $x$- and $y$-embeddings (Open Images and AudioSet respectively) are considered to be aligned if the following holds:
 
 \begin{itemize}
     \item For every member of the set $x_{intersect} = y_{intersect}$ of concepts that exist in both domains, the nearest neighbour of mapped concept $f(x_i)$ is the corresponding member $y_i$ in set $y_{intersect}$, and the nearest neighbour of mapped concept $g(y_i)$ is the corresponding member $x_i$ in set $x_{intersect}$. 
@@ -284,7 +290,6 @@ For this problem, the $x$- and $y$-embeddings (Open Images and AudioSet respecti
 
 The accuracy is computed after each epoch of training. It is defined as the fraction of concepts (only in the intersection set) in a domain whose nearest neighbour after mapping is the known other embedding in the other domain. 
 
-We aim to achieve the type of alignment described in Figure \ref{fig:alignment2}, where we do not map both domains to an intermediate space; rather, we learn a mapping directly from one domain to the other. This is because at this stage, we cannot make any assumptions about the manifold that the data lie on. We selected an embedding dimension of 6 based on heuristics; while this embedding dimension was found to work well in terms of producing sensible clusters, there is no evidence that 6 is the correct dimensionality for this problem. 
 
 \subsection{Model architecture}
 
@@ -293,10 +298,11 @@ We implement, in PyTorch, the following alignment network:
 \begin{itemize}
     \item A probabilistic GloVe embedding layer representing the first domain of embeddings to be aligned (henceforth referred to as the x-embeddings). In the case of these experiments, this is Open Images. 
     \item A probabilistic GloVe embedding layer representing the second domain of embeddings to be aligned (henceforth referred to as the y-embeddings). In the case of these experiments, this is AudioSet. 
-    \item A multi-layer perceptron with 3 hidden layers of 100 nodes each, that learns a mapping from the x-embeddings to the y-embeddings: $f(x) \rightarrow y$
+    \item A multi-layer perceptron with 3 hidden layers of 100 nodes each, that learns a mapping from the x-embeddings to the y-embeddings: $f(x) \rightarrow y$ 
     \item A multi-layer perceptron with 3 hidden layers of 100 nodes each, that learns a mapping from the y-embeddings to the x-embeddings: $g(y) \rightarrow x$
 \end{itemize}
 
+This particular MLP aligner architecture has been used in previous experiments, with good results. This project aims to prove that the principles are sound, therefore further optimisation of architecture is left for future work. 
 
 \subsubsection{Full loss function}
 
@@ -316,8 +322,8 @@ where the individual components are:
 \begin{itemize}
     \item $L_{glove, x}$: The GloVe loss for $x$ as in \ref{eq:gloveloss}. 
     \item $L_{glove, y}$: The GloVe loss for $y$ as in \ref{eq:gloveloss}. 
-    \item $L_{cycle, x}$: The cycle consistency loss from x to y: $||g(f(x)) - y||_2$
-    \item $L_{cycle, y}$: The cycle consistency loss from y to x: $||f(g(y)) - x||_2$
+    \item $L_{cycle, x}$: The cycle consistency loss from x to y: $||g(f(x)) - x||_2$
+    \item $L_{cycle, y}$: The cycle consistency loss from y to x: $||f(g(y)) - y||_2$
     \item $L_{distance, x-intersect}$: The distance loss between $f(x)$ and $y$, for only the intersection of concepts: $||f(x_{intersect}) - y_{intersect}||_2$
     \item $L_{distance, y-intersect}$: The difference between $g(y)$ and $x$, for only the intersection of concepts: $||g(y_{intersect}) - x_{intersect}||_2$
     \item $L_{distsim, x-intersect}$: An optional distributional similarity measure between $f(x_{intersect})$ and $y_{intersect}$
@@ -328,13 +334,15 @@ and $x_{intersect}$ and $y_{intersect}$ represent the embeddings of the concepts
 
 \subsubsection{Other model parameters}
 
+These hyperparameter choices were not cross-validated, as the aim of this project is to prove that the implementation is sound. 
+
+\label{section:otherparameters}
 \begin{itemize}
     \item Mini-batch size of 500
-    \item 10 samples of each concept embedding are taken for each mini-batch for a total of 5000 points per mini-batch
+    \item 10 samples of each concept embedding are taken for each mini-batch for a total of 5000 points per mini-batch. As the concept embeddings are themselves distributions, this means that we take 10 samples from each of those distributions. This acts like data augmentation, and was necessary to achieve alignment of above 95\%. If only one sample was used per concept embedding, maximum alignment accuracy was only around 90\%. 
     \item Alignment accuracy is defined as follows: for $x \in x_{intersect}$, the mean number of $i$ such that nearest neighbour of $f(x_i)$ is  $y_i$. For $y \in y_{intersect}$, the mean number of $j$ such that the nearest neighbour of $g(y_j)$ is $x_j$. 
     \item The model is run for 150 epochs; the mean accuracy (over $x$ and $y$) is measured after every epoch and the model is saved if the mean accuracy is greater than the last epoch mean accuracy. Therefore, the final saved model has the embeddings that gave the greatest mean accuracy. 
     \item The Adam optimiser is used with a learning rate of 0.01.
-    \item No hyperparameter tuning is done. 
 \end{itemize}
 
 In the next sections, the individual items in the loss are discussed more thoroughly.
@@ -355,7 +363,7 @@ f(x) &= \begin{cases}
 
 This is a weighted least-squares problem whose solution should be the set of embeddings where the scaled sum of dot products of each pair $\vecw_i$, $\vecw_j$ should approximate the co-occurrence statistics $X_{ij}$. 
 
-Experimentally, it was found that the GloVe loss for the respective domains had to be scaled by the ratio of concepts: there are 19996 Open Images concepts and 526 Audioset concepts, so the $x$ glove loss (Open Images) is multiplied by 19996 / 526. Without this, the GloVe loss was not enough to result in sensible clusters. 
+Experimentally, it was found that the GloVe loss for the respective domains had to be scaled by the ratio of concepts: there are 19996 Open Images concepts and 526 Audioset concepts, so the $x$ glove loss (Open Images) is multiplied by 19996 / 526. Without this rescaling, the learned embeddings yielded non-sensible results. 
 
 \subsection{Cycle consistency}
 

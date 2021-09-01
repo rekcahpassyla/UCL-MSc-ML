@@ -15,12 +15,7 @@ The variances of the independently learned embeddings,  when expressed as entrop
 
 Our algorithm successfully learned jointly aligned embeddings from two modalities, OpenImages containing 19996 concepts and AudioSet containing 526 concepts, with an intersection of 230 concepts. No post-processing of the learned embeddings was necessary for alignment. The 230 intersecting concepts were used as semi-supervised input into the algorithm by tying their mapped values together during training as part of the loss function. 
 
-Alignment accuracy, as measured by the number of concepts in one domain whose nearest neighbour in the mapped domain was the true corresponding concept in the other domain (as described in Section \ref{section:alignmentdef})  of more than 95\% was obtained between the two domains, for the intersecting concepts. However convergence to this level of accuracy while still maintaining sensible clustering (avoiding the degenerate case displayed in figure \ref{fig:dysfunctional_clusters}) required the following:
-
-    \begin{itemize}
-        \item 10 samples per embedding in the mini-batch needed to be used in each training step. This probably acts like data augmentation. 
-        \item GloVe loss to be scaled by the ratio of concepts; since Open Images had 19996 concepts and AudioSet 526, GloVe loss for Open Images was multiplied by 19996 / 526. The cause of this requirement has not been investigated. 
-    \end{itemize}
+Alignment accuracy, as measured by the number of concepts in one domain whose nearest neighbour in the mapped domain was the true corresponding concept in the other domain (as described in Section \ref{section:alignmentdef})  of more than 95\% was obtained between the two domains, for the intersecting concepts. However convergence to this level of accuracy while still maintaining sensible clustering (avoiding the degenerate case displayed in figure \ref{fig:dysfunctional_clusters}) required some tuning of the model parameters, as described in section \ref{section:otherpar}
     
 The criterion for saving the embeddings was when the mean alignment accuracy (of both OpenImages and AudioSet embeddings) was the highest. Knowing that the independently learned probabilistic embeddings for AudioSet required more epochs of training to converge than the similar case of Open Images, it is possible that the point of greatest alignment accuracy for AudioSet is at a different epoch than for Open Images, but that training to achieve this would cause a decrease in accuracy for Open Images. 
 
@@ -38,7 +33,7 @@ We conclude that there is some evidence that aligned embeddings are of higher qu
 
 When run using one GeForce RTX 2080 GPU, 150 epochs took about half an hour where most of the time taken was actually saving the model to disk when the mean epoch accuracy was greater than the previous epoch's accuracy (the actual model runtime was much less). 
 
-The most significant bottleneck in the process was actually creating the co-occurrence matrix for OpenImages, as there are close to 20000 concepts in the dataset, and this information was contained in a 57 million line text file. However this only needed to be done once. 
+The most significant bottleneck in the process was actually creating the co-occurrence matrix for OpenImages, as there are close to 20000 concepts in the dataset, and this information was contained in a 57 million line text file (this process took 2.5 hours). However this only needed to be done once.
 
 \section{Directions for future research}
 
