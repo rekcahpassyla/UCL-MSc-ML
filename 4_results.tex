@@ -1,15 +1,15 @@
 \chapter{Results}
 
-In this chapter we present the results of semi-supervised learning of aligned embeddings.
+In this chapter we present the results of semi-supervised learning of jointly aligned embeddings.
 
 
 \section{Summary}
 \begin{itemize}
     \item Alignment accuracies of greater than 95\% were achieved for both domains ($f(x) \rightarrow y$ and $g(y) \rightarrow x$).
-    \item Visualisation of the embeddings through t-SNE dimensionality reduction showed good clustering behaviour with semantically meaningful clusters.
-    \item Aligned embeddings are found to be of higher quality compared to independently learned embeddings, when using a similarity metric based on the WordNet lexical database. Specific definitions of ``quality" and ``similarity" are given in a later section.
-    \item Aligned embeddings are found to be less stable compared to independently learned embeddings. 
-    \item The MMD metric increases alignment accuracy, but can decrease embedding quality. 
+    \item Visualisation of the jointly aligned embeddings through t-SNE dimensionality reduction showed good clustering behaviour with semantically meaningful clusters.
+    \item Aligned embeddings were found to be of higher quality compared to independently learned embeddings, when using a similarity metric based on the WordNet lexical database. Specific definitions of ``quality" and ``similarity" are given in a later section.
+    \item Aligned embeddings were found to be less stable compared to independently learned embeddings. 
+    \item The MMD metric increased alignment accuracy, but sometimes decreased embedding quality. 
 \end{itemize}
 
 
@@ -22,7 +22,7 @@ In the below, the blue points represent the concepts in the intersection i.e. th
     \centering
     \includegraphics[width=\textwidth]{images/results/intersection_top300_tsne_openimages_probabilistic_sup_mmd0_150_AlignedGlove_1.png}
     \caption{
-        t-SNE plot of concept embeddings for Open Images that are in the intersection of both domains (blue points) or in the top 300 most frequent (orange points). These are the embeddings for alignment run without MMD. See Figure 4.3 for zoomed-in examples. 
+        t-SNE plot of concept embeddings for Open Images that are in the intersection of both domains (blue points) or in the top 300 most frequent (orange points). These are the embeddings for alignment run without MMD. See Figure \ref{fig:openimageszoom} for zoomed-in examples. 
     }
 \end{figure}
 
@@ -30,34 +30,35 @@ In the below, the blue points represent the concepts in the intersection i.e. th
     \centering
     \includegraphics[width=\textwidth]{images/results/intersection_top300_tsne_audioset_probabilistic_sup_mmd0_150_AlignedGlove_1.png}
     \caption{
-        t-SNE plot of concept embeddings for AudioSet that are in the intersection of both domains (blue points) or in the top 300 most frequent (orange points). These are the embeddings for alignment run without MMD. See Figure 4.4 for zoomed-in examples. 
+        t-SNE plot of concept embeddings for AudioSet that are in the intersection of both domains (blue points) or in the top 300 most frequent (orange points). These are the embeddings for alignment run without MMD. See Figure \ref{fig:audiosetzoom} for zoomed-in examples. 
     }
 \end{figure}
 
-Below, we show some enlarged examples of clusters which show concepts in the intersection and out of the intersection. These clusters show that a good balance is struck between the GloVe loss and the distance loss / MMD; for an example of what happens when this balance is not found, see Figure \ref{fig:alignment2}, where the GloVe loss was not weighted sufficiently compared to the distance loss / MMD. 
+Below, we show some enlarged examples of clusters which show concepts in the intersection and out of the intersection. These clusters show that a good balance is struck between the GloVe loss and the distance loss / MMD; for an example of what happens when this balance is not found, see Figure \ref{fig:dysfunctional_clusters}, where the GloVe loss was not weighted sufficiently compared to the distance loss / MMD. 
 
 
 \begin{figure}[H]
-\label{fig:openimageszoom}
+
     \centering
     \fbox{\includegraphics[width=0.4\textwidth]{images/results/openimages_zoom_insects.png}}
     \fbox{\includegraphics[width=0.4\textwidth]{images/results/openimages_zoom_ships.png}}
-    \caption{Enlarged view of two regions of the Open Images t-SNE plot, showing that concepts in and out of the intersection but semantically similar do form good clusters. As blue points denote concepts present in both domains and orange points denote concepts amongst the most frequent in the domain being examined, we want a mixture of orange and blue. }
+    \caption{\label{fig:openimageszoom}Enlarged view of two regions of the Open Images t-SNE plot, showing that concepts in and out of the intersection but semantically similar do form good clusters. As blue points denote concepts present in both domains and orange points denote concepts amongst the most frequent in the domain being examined, we want a mixture of orange and blue. }
 \end{figure}
 
 \begin{figure}[H]
-\label{fig:audiosetzoom}
+
     \centering
     \fbox{\includegraphics[width=0.4\textwidth]{images/results/audioset_zoom_sirens.png}}
     \fbox{\includegraphics[width=0.4\textwidth]{images/results/audioset_zoom_drums.png}}
-    \caption{Enlarged view of two regions of the AudioSet t-SNE plot showing the same phenomenon as described above.}
+    \caption{\label{fig:audiosetzoom}Enlarged view of two regions of the AudioSet t-SNE plot showing the same phenomenon as described above.}
 \end{figure}
 
 
 \section{Statistics}
 
 \subsection{Correlations}
-\subsubsection{Mean (Pearson) cross-correlation of self-similarity matrices}
+\subsubsection{Average (Pearson) cross-correlation of self-similarity matrices of embedding means}
+
 \begin{table}[H]
 \centering
 \begin{tabular}{lrrr}
@@ -69,9 +70,10 @@ Open Images    & 0.590 $\pm$ 0.049 & 0.474 $\pm$ 0.044 &     0.420 $\pm$  0.040 
 AudioSet    & 0.412 $\pm$ 0.045 &  0.399 $\pm$ 0.044  &      0.346  $\pm$ 0.043  \\
 \bottomrule
 \end{tabular}
-\caption{The similarity measure used for this table is the dot product of the means of the embeddings. The mean is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10).}
+\caption{The similarity measure used for this table is the dot product of the means of the embeddings. The average is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10).}
 \end{table}
 
+\subsubsection{Average (Pearson) cross-correlation of self-similarity matrices of samples of embeddings}
 \begin{table}[H]
 \centering
 \begin{tabular}{lrrr}
@@ -79,16 +81,18 @@ AudioSet    & 0.412 $\pm$ 0.045 &  0.399 $\pm$ 0.044  &      0.346  $\pm$ 0.043 
 Domain &   Independent & Aligned     &  Aligned  \\
        &               & without MMD &  with MMD \\
 \midrule
-Open Images    & 0.643 $\pm$ 0.044 & 0.519 $\pm$ 0.038 &     0.462 $\pm$  0.041 \\
-AudioSet    & 0.441 $\pm$ 0.044 &  0.379 $\pm$ 0.049  &      0.327  $\pm$ 0.039  \\
+Open Images    & 0.589 $\pm$ 0.049 & 0.480 $\pm$ 0.040 &     0.434 $\pm$  0.040 \\
+AudioSet    & 0.412 $\pm$ 0.044 &  0.399 $\pm$ 0.044  &      0.346  $\pm$ 0.043  \\
 \bottomrule
 \end{tabular}
-\caption{The similarity measure used for this table is the cosine similarity of the means of the embeddings. The mean is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10).}
+\caption{The similarity measure used for this table is mean of the dot product of 100 samples of each embedding (100 samples are taken, the pairwise dot product similarity computed, and the mean of those 100 similarity matrices is taken). This measure was used to take into account the variance of the embeddings, where the previous table used only the learned means of the embeddings. The average is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10). It is not a typographical error that the values for AudioSet for mean of 100 similarity matrices are the same as the values for the embedding means in the previous table. }
 \end{table}
 
 The runs of the independently learned embeddings are more correlated with each other, compared to the equivalent calculation with the aligned embeddings. This means that the similarity matrices (of each run's embeddings with itself) are more consistent across runs. This correlation has dropped in the aligned runs, indicating that the output embeddings are less similar to themselves across runs. We can say that the alignment introduces more variation in the embeddings. MMD in particular seems to introduce more variability. 
 
 \subsubsection{Mean Spearman correlation of entropy with frequency of occurrence}
+\begin{table}[H]
+\centering
 \begin{tabular}{lrrr}
 \toprule
 Domain &   Independent & Aligned     &  Aligned  \\
@@ -98,64 +102,64 @@ Open Images    &  -0.179 $\pm$ 0.011 & 0.0421 $\pm$ 0.019 &     0.0362 $\pm$  0.
 AudioSet    &  -0.400 $\pm$ 0.041 & -0.000539 $\pm$   0.074 &      0.0359  $\pm$ 0.026  \\
 \bottomrule
 \end{tabular}\\
-
+\end{table}
 There is a slight negative Spearman correlation between the entropy of a concept and its frequency of occurrence, in the independently learned cases. Entropies of less frequently occurring concepts are found to be higher, which is intuitively sensible; there is less information about those concepts so we would expect the variance, and therefore the entropy, to be higher. 
 
-This correlation has largely disappeared in the aligned cases, being roughly around zero, indicating that there is now no relationship between the variance of the learned embedding for a concept and the frequency of that concept in the dataset. 
+This correlation has largely disappeared in the aligned cases, being roughly around zero, indicating that there is now no relationship between the variance of the learned embedding for a concept and the frequency of that concept in the dataset. In this respect, the aligned probabilistic embeddings are less informative than the independent probabilistic ones. 
 
 \subsection{Entropy plots of aligned embeddings}
 
 \subsubsection{Open Images}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\textwidth]{images/method/probabilistic_aligned/openimages/probabilistic_sup_mmd0_150_entropies.png}
-    \caption{
-        Histogram of entropies for aligned Open Images embeddings, run without MMD. The plot is very faintly bimodal and there is more variability in it over runs with different random seeds than the entropy plot for independently learned embeddings (Fig. \ref{fig:entropyindependent})
-    }
-\end{figure}
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.5\textwidth]{images/method/probabilistic_aligned/openimages/probabilistic_sup_mmd0_150_entropies.png}
+%    \caption{
+%        Histogram of entropies for aligned Open Images embeddings, run without MMD. The plot is very faintly bimodal and there is more variability in it over runs with different random seeds than the entropy plot for independently learned embeddings (Fig. \ref{fig:entropyindependent})
+%    }
+%\end{figure}
 
-\begin{figure}[H]
+%\begin{figure}[H]
 
-    \centering
-    \includegraphics[width=0.5\textwidth]{images/method/probabilistic_aligned/openimages/probabilistic_sup_mmd100_150_entropies.png}
-    \caption{
-        Histogram of entropies for aligned Open Images embeddings, run with MMD. Compared to the entropy plots of the models run without MMD, there is even more variability in the distributions between runs with different random seeds. 
-    }
-\end{figure}
+%    \centering
+%    \includegraphics[width=0.5\textwidth]{images/method/probabilistic_aligned/openimages/probabilistic_sup_mmd100_150_entropies.png}
+%    \caption{
+%        Histogram of entropies for aligned Open Images embeddings, run with MMD. Compared to the entropy plots of the models run without MMD, there is even more variability in the distributions between runs with different random seeds. 
+%    }
+%\end{figure}
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/results/openimages_entropies_violin.png}
     \caption{
-        Violin plots of entropy distributions for independent embeddings, aligned without MMD and aligned with MMD. 
+        Violin plots of entropy distributions for independent embeddings, aligned without MMD and aligned with MMD. The entropy distribution for aligned embeddings is more variable between runs than that for independent embeddings. The use of MMD increases this variability. 
     }
 \end{figure}
 
 \subsubsection{AudioSet}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{images/method/probabilistic_aligned/audioset/probabilistic_sup_mmd0_150_entropies.png}
-    \caption{
-        Histogram of entropies for aligned AudioSet embeddings, run without MMD. The same pattern of bimodality plus greater variability is observed as in Open Images. Again, there is more variability in the distributions between runs with different random seeds compared with the equivalent plot for independently learned embeddings (Fig. \ref{fig:entropyindependent})
-    }
-\end{figure}
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.6\textwidth]{images/method/probabilistic_aligned/audioset/probabilistic_sup_mmd0_150_entropies.png}
+%    \caption{
+%        Histogram of entropies for aligned AudioSet embeddings, run without MMD. The same pattern of bimodality plus greater variability is observed as in Open Images. Again, there is more variability in the distributions between runs with different random seeds compared with the equivalent plot for independently learned embeddings (Fig. \ref{fig:entropyindependent})
+%    }
+%\end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.6\textwidth]{images/method/probabilistic_aligned/audioset/probabilistic_sup_mmd100_150_entropies.png}
-    \caption{
-        Histogram of entropies for aligned AudioSet embeddings, run with MMD. Again, the same pattern of even greater variability between runs with different random seeds, is observed as in Open Images. 
-    }
-\end{figure}
+%\begin{figure}[H]
+%    \centering
+%    \includegraphics[width=0.6\textwidth]{images/method/probabilistic_aligned/audioset/probabilistic_sup_mmd100_150_entropies.png}
+%    \caption{
+%        Histogram of entropies for aligned AudioSet embeddings, run with MMD. Again, the same pattern of even greater variability between runs with different random seeds, is observed as in Open Images. 
+%    }
+%\end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/results/audioset_entropies_violin.png}
     \caption{
-        Violin plots of entropy distributions for independent embeddings, aligned without MMD and aligned with MMD. 
+        Violin plots of entropy distributions for independent embeddings, aligned without MMD and aligned with MMD. The aligned embeddings, whether run with or without MMD, show a bimodal entropy distribution and much greater variability than that of the independent embeddings.  
     }
 \end{figure}
 
@@ -189,52 +193,65 @@ mean &       0.9543 &        0.9613 &   0.9583 &  0.9704  \\
 High alignment accuracy between embeddings in both domains does not necessarily mean the embeddings are good. Figure \ref{fig:dysfunctional_clusters} below is a t-SNE plot of aligned embeddings (reduced to 2 dimensions) of very high accuracy (97\%), meaning that the embeddings in Open Images and AudioSet are well aligned. However, the actual embeddings did not form good clusters; concepts that were related semantically tended not to be close in embedding space. 
 
 \begin{figure}[H]
-\label{fig:dysfunctional_clusters}
+
     \centering
     \includegraphics[width=1.0\textwidth]{images/method/probabilistic_aligned/dysfunctional_clusters.png}
-    \caption{
+    \caption{\label{fig:dysfunctional_clusters}
         The alignment accuracy for this set of embeddings is 97\%. The blue points denote concepts that are in the intersection of concepts (present in both Open Images and AudioSet). The orange points denote concepts that are in the 200 most frequent concepts occurring in Open Images. It is immediately visible that the algorithm has clustered concepts in the intersection degenerately; concepts that are in the intersection are more likely to be close to other concepts in the intersection rather than concepts that are semantically close.
     }
 \end{figure}
 
-Hence, alignment accuracy is insufficient and we need another metric. To evaluate the quality of the resulting aligned embeddings, we could compare them to independently learned embeddings. If our alignment algorithm is good, we should expect that the aligned embeddings are of higher quality than the independently learned embeddings. 
+Hence, alignment accuracy is insufficient as a metric. We can also examine the average Pearson correlations of the similarity matrices of the aligned and independent embeddings over 10 random seeds, for the two model variants: 
 
-\todo[inline]{Add results from computing correlation between aligned and independent as per BR comment}
+%inspect_results.py function aligned_vs_ind_corrs
+\begin{table}[H]
+\centering
+\begin{tabular}{lrrrr}
+  \toprule
+       &    Open Images&               &  AudioSet    &            \\
+{} &    Without MMD &   With MMD   &  Without MMD &   With MMD \\
+\midrule
+   &       0.532 \pm 0.035 &   0.465 \pm 0.038 &   0.334 \pm 0.036 &  0.331 \pm 0.038  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The above are aggregate statistics that only tell us that there is a positive correlation between the similarities of the aligned and independent embeddings. We do not know if the aligned embeddings are actually semantically more meaningful than the independent, or the other way around. 
 
 \subsection{Comparing aligned embeddings with human similarity scores}
 
-A plausible measure of embedding quality would be a comparison of the similarity of concept pairs as calculated from embeddings, with the similarity of concept pairs as evaluated by humans. In order to do this, we need to find datasets that capture human ratings of similarity.
+A plausible measure of embedding quality would be a comparison of the similarity of concept pairs as calculated from embeddings, with the similarity of concept pairs as evaluated by humans. In order to do this, we need to find datasets that capture human ratings of similarity. If our alignment algorithm is good, we should expect that the aligned embeddings are of higher quality than the independently learned embeddings and correlate more highly with human similarity judgement. 
 
-\textbf{MTURK-771}: The MTURK-771 dataset was created by the authors of \cite{mturk771}, a study in learning the relatedness of word pairs. This study evaluates its test algorithm to predict relatedness by comparing the Spearman correlation of its predictions with the human judgements. The MTURK-771 dataset comprises 771 pairs of words with human-rated similarity scores, collected using the Amazon Mechanical Turk online tool. Unfortunately, the intersection of the 771 word pairs with our Open Images and AudioSet concepts was not large - 171 (0.013\%)  for Open Images and only 3 (0.0071\%) for AudioSet. 
+\textbf{MTURK-771}: The MTURK-771 dataset was created by the authors of \cite{mturk771}, a study in learning the relatedness of word pairs. The predictions are tested by comparing the Spearman correlation of its predictions with human judgements. The MTURK-771 dataset comprises 771 pairs of words with human-rated similarity scores, collected using the Amazon Mechanical Turk tool. The intersection of the 771 word pairs with our Open Images and AudioSet concepts was small - 171 (0.013\%)  for Open Images and only 3 (0.0071\%) for AudioSet. 
 
-\textbf{WordNet}: The WordNet \cite{WordNet} lexical database contains English nouns, verbs and adjectives grouped according to synonymy (semantic similarity) and hypernymy/hyponymy (hierarchy). Words in WordNet are represented by ``synsets", each of which denotes a particular sense of the word (for example, ``orange" may refer to the colour or the fruit). Therefore, one word may map to several synsets within WordNet. The relationships between word senses were hand-encoded from various corpora and thesauri, which themselves were human-curated; therefore, we consider the lexical and semantic information contained within WordNet to be an appropriate representation of human judgement. The WordNet database can be accessed directly from the \texttt{nltk} Python package. 
+\textbf{WordNet}: The WordNet \cite{WordNet} lexical database contains English nouns, verbs and adjectives grouped according to synonymy (semantic similarity) and hypernymy/hyponymy (hierarchy). Words are represented by ``synsets" which denote a particular sense of the word (for example, ``orange" may refer to the colour or the fruit). Therefore, one word may map to several synsets. The relationships between word senses were hand-encoded from various corpora and thesauri, which themselves were human-curated; therefore, we consider the lexical and semantic information contained within WordNet to be an appropriate representation of human judgement. The WordNet database can be accessed directly from the \texttt{nltk} Python package. 
 
-There is a substantial overlap between pairs of words found in WordNet and pairs of concepts from our dataset.  Out of 128005400 nonzero pairs occurring in Open Images, 27052350 (21.1\%) are also present in WordNet. Out of 42002 nonzero pairs in AudioSet, 19208 (45.7\%) are also present in WordNet. 
+There is a substantial overlap between pairs of words found in WordNet and pairs of concepts from our dataset.  Out of approximately 128 million (128005400) nonzero pairs occurring in Open Images, approximately 27 million (27052350, 21.1\%) are also present in WordNet. Out of 42002 nonzero pairs in AudioSet, 19208 (45.7\%) are also present in WordNet. 
 
-\textbf{ILSVRC}: A third available dataset originates from a prototype model for \cite{RoadsLoveCVPR}, in which human similarity judgements of pairs of concepts were collected to supplement the ImageNet Large-Scale Visual Recognition Challenge (ILSVRC) 2012 task. This dataset will be referred to as the ``enhanced ILSVRC" dataset. These judgements were collected from participants using Amazon Mechanical Turk. The data collection process was carefully set up to assemble a good set of human similarity judgements, using probabilistic techniques for trial selection to maximise the expected information gain from each trial. In this dataset, 147070 (0.115\%) pairs overlap with Open Images, and 93 (0.221\%) pairs overlap with AudioSet. One word, ``tick", was removed from the AudioSet pairs when computing the Spearman correlation, because that label as used in AudioSet is used to describe the sound and not the insect. We know that the ImageNet label corresponds to the insect. 
+\textbf{ILSVRC}: A third available dataset originates from a prototype model for \cite{RoadsLoveCVPR}, in which human similarity judgements of pairs of concepts were collected to supplement the ImageNet Large-Scale Visual Recognition Challenge (ILSVRC) 2012 task. This dataset will be referred to as the ``enhanced ILSVRC" dataset. These judgements were collected from participants using Amazon Mechanical Turk. The data collection process used probabilistic techniques for trial selection to maximise the expected information gain from each trial. In this dataset, 147070 (0.115\%) pairs overlap with Open Images, and 93 (0.221\%) pairs overlap with AudioSet. One word, ``tick", was removed from the AudioSet pairs when computing the comparison, because that label as used in AudioSet is used to describe the sound and not the insect. We know that the ImageNet label corresponds to the insect. 
 
 We adopt the method used by \cite{mturk771} of comparing the Spearman correlation of the similarity of our embedding concept pairs with the similarity of the human-measured dataset to evaluate the quality of aligned embeddings compared to independently learned embeddings. The Spearman correlation is used because we wish to evaluate whether there is a monotonic relationship, and the similarity measures all use different scales. The cosine similarity measure is used as it contains the dot product, which is an input into the GloVe algorithm that generates the embeddings, and the magnitude of the embeddings is not meaningful. 
 
-The similarity of two concepts with indexes $i$ and $j$ in embedding space is measured as
+The similarity of two concepts with indexes $i$ and $j$ in embedding space is:
 
-\begin{equation}
+\begin{equation*}
 s_{ij} = \frac{\vece_i \cdot \vece_j}{||\vece_i||_2 \medspace ||\vece_j||_2}
-\end{equation}
+\end{equation*}
 
 where $\vece_i$ represents the $i$-th embedding .
 
-If the correlation with the human similarity dataset is higher for aligned embeddings than for independently learned embeddings, this would indicate that the alignment process is adding value and resulting in more cognitively plausible embeddings. This is because it indicates that the aligned embedding pairs are in aggregate more like human judgement of similarity than the independent embedding pairs. Since our goal is to obtain embeddings that are more similar to human judgement, this would translate to the aligned embeddings being of higher quality, by this metric. We can generalise this to other model variants, for example aligning with or without the MMD loss, to evaluate the effect of the variant. 
+If the correlation with the human similarity dataset is higher for aligned embeddings than for independently learned embeddings, this indicates that the alignment process is adding value, resulting in more cognitively plausible embeddings. This is because it indicates that the aligned embedding pairs are in aggregate more like human judgement of similarity than the independent embedding pairs. We will use this as a metric for embedding quality, where higher quality means more similar to human judgement.  We evaluate the model variants with and without MMD by this metric, to evaluate the effect of the variant. 
 
-The MTURK-771 and enhanced ILSVRC datasets are pre-existing mappings of concept pairs to similarity values, which can be used without any processing. However, there is no such WordNet dataset of similarity ready for direct use, so we have to construct one. WordNet has various available similarity measures between synsets that can be computed directly from the Python library. We choose the Leacock-Chodorow (LCH) similarity measure \cite{LeacockChodorow}, which takes the shortest path between the two synsets, scaled by the maximum depth from the top of the taxonomy tree of the two synsets (this measure was chosen as it is the only one that combines path length between nodes and depth of the tree).  
+The MTURK-771 and enhanced ILSVRC datasets are pre-existing mappings of concept pairs to similarity values, which can be used without any preprocessing. There is no such WordNet dataset of direct similarity, so we have to construct one. WordNet makes available similarity measures between synsets that can be computed directly from the Python library. We choose the Leacock-Chodorow (LCH) similarity measure \cite{LeacockChodorow}, which takes the shortest path between the two synsets, scaled by the maximum depth from the top of the taxonomy tree of the two synsets (this measure was chosen as it is the only one that combines path length between nodes and depth of the tree).  
 
-As a single word or phrase may map to several synsets, and we have no sense information in our Open Images / AudioSet concept names to disambiguate between choices, we have to use a heuristic algorithm for choosing a synset in the cases where there is more than one:
+As a single word or phrase may map to several synsets, and we have no sense information in our Open Images / AudioSet concept names to disambiguate between choices, we have to use a heuristic algorithm for that selects which specific synset pair's scores to use:
 
 \begin{itemize}
-    \item Check every pair in the domain (Open Images or AudioSet) that appears at least once (its entry in the co-occurrence matrix is nonzero). 
-    \item Convert each word in the pair to lowercase with spaces replaced with underscores, as this is the WordNet naming scheme.
-    \item Check if both converted words have synsets represented in WordNet. If either is not present in WordNet, ignore the pair.
-    \item For each combination of the first 2 synsets for each word (up to 4 pairs in total), compute the LCH similarity if both elements in the pair have the same part of speech. If they do not have the same parts of speech, ignore the pair. \footnote{WordNet similarity is not defined for synsets which do not have the same parts of speech. } This is to handle pairs like ``mandarin orange" and ``orange"; ``mandarin orange" has two synsets, the first of which refers to the mandarin orange tree, and the second of which refers to the fruit. Therefore the second ``mandarin orange" synset matches the first ``orange" synset (which denotes the fruit, rather than the colour) more closely. One mode of failure for this algorithm is for words that occur in both Open Images and AudioSet but with different meanings, for example ``tap" and ``tick" are different concepts when referring to objects or sounds. 
-    \item The WordNet similarity for the pair is taken to be the largest such value. It is noted that therefore this algorithm will be biased high.
+    \item Check every pair in the domain (Open Images or AudioSet) that appears at least once (its entry in the co-occurrence matrix is nonzero).
+    \item Convert the pair words to lowercase with spaces replaced with underscores (this is the WordNet naming scheme).
+    \item Check if both words have synsets in WordNet. If either does not, ignore the pair.
+    \item For each combination of the first 2 synsets for each word (up to 4 pairs in total), compute the LCH similarity if both elements in the pair have the same part of speech, otherwise ignore the pair. \footnote{WordNet similarity is not defined for synsets which do not have the same parts of speech. } This is to handle pairs like ``mandarin orange" and ``orange". ``Mandarin orange" has two synsets; the first refers to the mandarin orange tree, and the second refers to the fruit. Therefore the second ``mandarin orange" synset matches the first ``orange" synset (which denotes the fruit, rather than the colour) more closely. One mode of failure for this algorithm is for words that occur in both Open Images and AudioSet but with different meanings, for example, ``tap" and ``tick" are different concepts when referring to objects or sounds. 
+    \item The WordNet similarity for the pair is taken to be the largest such value. This algorithm will therefore be biased high.
 \end{itemize}
 
 
@@ -262,6 +279,7 @@ enhanced ILSVRC    &    0.115\% &  0.221\% \\
 
 \subsubsection{Open Images, Spearman correlation with human similarity metrics}
 \begin{table}[H]
+\centering
 \begin{tabular}{lrrrrrrrrr}
   \toprule
    &     &   MTURK-771        &               &      &    WordNet       &               &     &  ILSVRC           & \\
@@ -288,6 +306,7 @@ mean &     0.355 &  0.291 &   0.283 &     0.205 &  0.228 &    0.231 &   0.514 & 
 
 
 \begin{table}[H]
+\centering
 \begin{tabular}{lrrrrrr}
   \toprule
        &   MTURK-771 &           &  WordNet  &           &  ILSVRC  &            \\
@@ -311,13 +330,13 @@ mean &     -0.0641 &    -0.0716  &   0.0230 &     0.0256 &    -0.0373 &    -0.05
 \end{table}
 
 
-For Open Images, using the WordNet comparison metric, it appears that the aligned embeddings are more correlated with human similarity than the independently learned embeddings, as the mean Spearman correlation of alignment pairwise cosine similarity with WordNet similarity is greater for aligned embeddings than for independent embeddings. 
+For Open Images, using the WordNet comparison metric, the aligned embeddings are more correlated with human similarity than the independently learned embeddings, as the mean Spearman correlation of alignment pairwise cosine similarity with WordNet similarity is greater for aligned embeddings than for independent embeddings. 
 
 The reverse is observed with the MTURK-771 comparison metric, but we do note that this is a very small dataset of only 170 pairs present in both Open Images (out of 120 million pairs) and MTURK-771. The same phenomenon as with MTURK-771 is also observed when comparing with the ILSVRC metric, where the aligned embeddings are less correlated with human judgement than the independently learned embeddings degree of correlation with human judgement. 
 
 However, the ILSVRC dataset is unbalanced, and some of the choices of included concepts are strange. There are 1000 concepts present in it, of which 124 are different breeds of dog. In fact, 398 of the concepts present in the ILSVRC are different types of animal. There are some concepts in the selected 1000 that almost certainly are not amongst the most common humanly known concepts, for example, ``shoji"\footnote{A Japanese sliding door made of paper.} and ``bicycle-built-for-two" (with ``bicycle" not present). The only flowers present are ``cardoon" \footnote{A type of thistle.}, ``daisy" and ``yellow lady's slipper". In short, the concepts represented in the ILSVRC dataset do not appear to be a very good sample of human concepts. To investigate whether the imbalance of the dataset was affecting results, runs were tried of the ILSVRC dataset excluding all the animals and then only including animals, but the results were broadly the same. 
 
-\textbf{Given that the overlap of WordNet pairs with our domain pairs is considerable (21.1\% for Open Images and 45.7\% for AudioSet), we think that the higher correlation with WordNet similarity for aligned embeddings constitutes some evidence that embedding quality may be improved by alignment.} This would be consistent with hypotheses that multi-task learning adds value by producing a model that generalises better.
+\textbf{Given that the overlap of WordNet pairs with our domain pairs is considerable (21.1\% for Open Images and 45.7\% for AudioSet), we think that the higher correlation with WordNet similarity for aligned Open Images embeddings constitutes evidence that embedding quality is improved by alignment.} This would be consistent with hypotheses that multi-task learning adds value by producing a model that generalises better.
 
 However, playing devil's advocate, we do also point out that the WordNet similarity score is an artificial score inferred from properties of the WordNet database, whereas the MTURK-771 and  ILSVRC similarity measures are directly collected from humans. 
 
@@ -328,6 +347,7 @@ Using the MMD as a component of the loss appears to increase accuracy, as well a
 MTURK-771 is excluded from this comparison, as with only 3 pairs present in both MTURK-771 and AudioSet, no meaningful results could be obtained. 
 
 \begin{table}[H]
+\centering
 \begin{tabular}{lrrrrrrrrr}
   \toprule
        &       &   WordNet &           &      &  ILSVRC   &            \\
@@ -356,6 +376,7 @@ mean &    0.142 &  0.152 &   0.151 &   0.584 &  0.620 &   0.611 &  \\
 
 
 \begin{table}[H]
+\centering
 \begin{tabular}{lrrrr}
   \toprule
        &     WordNet  &           &  ILSVRC  &            \\
@@ -378,9 +399,16 @@ mean &    0.00964 &     0.00844 &   0.0361 &     0.0267  \\
 \end{tabular}
 \end{table}
 
-\textbf{When compared with both WordNet and ILSVRC, AudioSet aligned embeddings are more correlated with human similarity judgement than the independently learned embeddings.}  When compared with WordNet similarity, both domains' aligned embeddings showed more correlation with human similarity judgement than the equivalent independently learned embeddings. This is some evidence to show that the information gained from learning both domains simultaneously results in both domains' embeddings being of higher quality. However, only 93 pairs present in AudioSet overlap with ILSVRC pairs, so this is not a large sample for comparison. It is also subject to the vagaries of the ILSVRC dataset concept choice, as discussed in the previous section. We observe an asymmetry, where Open Images improves AudioSet with respect to ILSVRC, but AudioSet does not improve Open Images, which could be due to the fact that there are nearly 40 times as many concepts in Open Images than AudioSet, so there is simply much more information there to assist with alignment of AudioSet than there is in the other direction. 
+\textbf{When compared with both WordNet and ILSVRC, AudioSet aligned embeddings are more correlated with human similarity judgement than the independently learned embeddings.}  However, only 93 pairs present in AudioSet overlap with ILSVRC pairs, so this is not a large sample for comparison. It is also subject to the vagaries of the ILSVRC dataset concept choice, as discussed in the previous section. We observe an asymmetry, where Open Images improves AudioSet with respect to ILSVRC, but AudioSet does not improve Open Images, which could be due to the fact that there are nearly 40 times as many concepts in Open Images than AudioSet, so there is simply much more information there to assist with alignment of AudioSet than there is in the other direction. 
 
-Similar to Open Images, including MMD in the loss function increases accuracy, but it slightly decreases alignment quality when compared to independently learned embeddings using both WordNet and ILSVRC metrics. 
+Similar to Open Images, including MMD in the loss function increases accuracy, but it slightly decreases alignment quality when compared to independently learned embeddings using both WordNet and ILSVRC metrics.
+
+\subsubsection{Overall results}
+\textbf{When compared with WordNet similarity, both domains' aligned embeddings showed more correlation with human similarity judgement than the equivalent independently learned embeddings. This is some evidence to show that the information gained from learning both domains simultaneously results in both domains' embeddings being of higher quality.} 
+ 
+This matches the multi-task learning research showing that learning from multiple sources results in models that generalise better.
+
+\todo[inline]{TODO}
 
 \subsection{Embedding stability}
 
@@ -405,12 +433,12 @@ Empirically, alignment appears to decrease stability of the embeddings, meaning 
 \toprule
 Embedding type  & MMD    & Domain          & Union metric & Intersection metric         \\
 \midrule
-Aligned & 0   & Open Images &  0.237304 & 0.07333\\
-            &     & AudioSet &  0.210765 & 0.053512\\
-            & 100 & Open Images &  0.210257 & 0.052667\\
-                   &     & AudioSet &  0.224780 & 0.081605\\
-Independent & 0   & Open Images &  0.289989 & 0.101333 \\
-                   &     & AudioSet &  0.39005 & 0.331104 \\
+Aligned & Without MMD   & Open Images &  0.2373 & 0.0733\\
+            &     & AudioSet &  0.2108 & 0.0535\\
+            & With MMD & Open Images &  0.2103 & 0.0527\\
+                   &     & AudioSet &  0.2248 & 0.0816\\
+Independent & N/A   & Open Images &  0.2900 & 0.1013 \\
+                   &     & AudioSet &  0.3901 & 0.3311 \\
 \bottomrule
 \end{tabular}\\
 \end{table}
@@ -443,7 +471,7 @@ The per-item plots very clearly show that alignment decreases the stability of t
 \subsection{Other findings}
 \subsubsection{The role of MMD}
 
-Using MMD as a loss function has the effect of forcing $f(x)$ and $y$ to have the same distribution, and  $g(y)$ and $x$ to have the same distribution. Therefore it is reasonable that it should have a positive effect on alignment accuracy. However if the weighting of the MMD loss is high relative to glove loss, there is more pressure for distribution  matching but less pressure for good embeddings which can result in dysfunctional embeddings where all the concepts in the intersection are clustered together as shown in figure \ref{fig:dysfunctional_clusters}. 
+Using MMD as a loss function has the effect of forcing $f(x)$ and $y$ to have the same distribution, and  $g(y)$ and $x$ to have the same distribution. Therefore it is reasonable that it should have a positive effect on alignment accuracy. However if the weighting of the MMD loss is high relative to glove loss, there is more pressure for distribution  matching but less pressure for good embeddings which can result in dysfunctional embeddings where all the concepts in the intersection are clustered together as shown in Figure \ref{fig:dysfunctional_clusters}. 
 
 \subsubsection{Entropies and variances}
 
