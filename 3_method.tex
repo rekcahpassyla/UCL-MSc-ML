@@ -291,7 +291,7 @@ For this problem, the $x$- and $y$-embeddings (Open Images and AudioSet respecti
 
 The accuracy is computed after each epoch and defined as the fraction of concepts (in the intersection) in a domain whose nearest neighbour after mapping is the known other embedding in the other domain. Accuracy of 1.0 for domain $x$ denotes that for every concept $x_i$ in domain $x$, the nearest neighbour of $f(x_i)$ is $y_i$ where it is known that $x_i$ corresponds to $y_i$. 
 
-\subsection{Model architecture}
+\subsection{Alignment model architecture}
 
 This project only aims to prove that the principles are sound, therefore no tuning of architecture or hyperparameters was done. 
 
@@ -374,7 +374,7 @@ Experimentally, it was found that the GloVe loss for the respective domains had 
 
 \subsection{Cycle consistency}
 
-The cycle-consistency loss relates a domain's embeddings to their reconstruction after mapping to the other domain and back. This uses transitivity to self-supervise training; we want $g(f(x))$ to be close to $x$ and $f(g(y))$ to be close to $y$. 
+The cycle-consistency loss relates a domain's embeddings to their reconstruction after mapping to the other domain and back. This uses transitivity to self-supervise training by inducing $g(f(x))$ to be close to $x$ and $f(g(y))$ to be close to $y$. 
 
 As stated in \cite{CycleGAN}, simply requiring $f(x)$ to be close to $y$ and $g(y)$ to be close to $x$ is insufficient as overfitting can result in a network being able to map an arbitrary set of inputs to an arbitrary set of outputs. In the CycleGAN implementation of \cite{CycleGAN}, the L1 norm is used, but in this experiment we use the L2 norm as we do not want a sparsity constraint imposed on the embeddings. 
 
@@ -398,7 +398,7 @@ L_{distance} &= E_{x_{intersect}}||f(x_{intersect}) - y_{intersect}||_2 + E_{y_{
 \end{split}
 \end{equation*}
 
-The Manifold Alignment GAN (MAGAN \cite{magan}) used this loss to prevent the generators (the mapping MLPs in our model) learning a mapping that simply superimposed the manifolds without actually aligning the points. 
+The Manifold Alignment GAN (MAGAN \cite{magan}) used this loss to prevent the generators (the mapping MLPs in our model) learning a mapping that simply superimposed the manifolds without actually aligning the points. In our model it has the same function- this is the loss that induces the mapping from one domain to another. 
 
 \subsection{Distributional similarity measure}
 
@@ -411,7 +411,7 @@ The maximum mean discrepancy (MMD) statistic is introduced in \cite{MMDGretton} 
 \begin{itemize}
     \item The kernel must be characteristic: If the inputs are random variables $X$ with domain $\Omega$ and distribution $P$, there is a one to one mapping between the mean value in feature space and the distributions. \cite{KernelMeanEmbeddingReview} 
     \item That is, each distinct value for the mean in feature space maps to a different possible distribution. 
-    \item Intuitively, the kernel function must be "rich enough" to represent all possible distributions. A known characteristic kernel function that is commonly used is the Gaussian kernel function $k(\vecx, \vecy) = \exp(-\alpha ||\vecx - \vecy||_2^2)$, and this is what we use in our experiments. 
+    \item Intuitively, the kernel function must be ``rich enough" to represent all possible distributions. A known characteristic kernel function that is commonly used is the Gaussian kernel function $k(\vecx, \vecy) = \exp(-\alpha ||\vecx - \vecy||_2^2)$, and this is what we use in our experiments. 
 \end{itemize}
 
 Given the following:
