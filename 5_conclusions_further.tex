@@ -1,4 +1,4 @@
-\chapter{Further discussion and conclusions}
+\chapter{Conclusions and further discussion}
 
 \section{Summary of results}
 
@@ -9,7 +9,6 @@ The main aim was to learn jointly aligned probabilistic embeddings, represented 
 \subsection{Independently learned probabilistic embeddings}
 
 The variances of the independently learned embeddings,  when expressed as entropies, correlate negatively with co-occurrence frequency. Concepts which occur less frequently in the input data have a higher variance. This is an expected result- there is more uncertainty about concepts that occur less frequently. The means of the probabilistic embeddings represent sensible clusters when viewed through scatter plots of t-SNE dimensionality reduction down to 2 dimensions. Qualitatively, items in the concept hierarchy that represent more abstract concepts from the point of view of the hierarchy (``Cat", ``Dog") have nearest neighbours that are not very well clustered. Items that are more specific (``Domestic short-haired cat")  have nearest neighbours that are more sensible. Examples of these phenomena are shown in Tables \ref{table:cat} and \ref{table:subclasscat}. 
-% Do not know why the cross-referencing does not work. 
 
 \subsection{Semi-supervised learning of aligned embeddings}
 
@@ -77,3 +76,5 @@ Preliminary work was unable to produce accuracies greater than 1\% for unsupervi
 Further preliminary work also tested the Manifold Alignment GAN \cite{magan} and the Wasserstein GAN \cite{WassersteinGAN}, using the configurations described in the respective papers, with the full loss function as in  equation \ref{eq:fulllossfunction} used as the generator loss. Neither of these produced any feasible alignment. Mode collapse (all concepts mapping to the same embedding) was at first an issue, but even with the minibatch discrimination technique \cite{ImprovedTechniquesTrainingGANS} to remove this possibility, no feasible alignment was found. The discriminator loss was asymptotically minimal, indicating that the discriminators were not able to tell the mapped values from the real values, but there was still no alignment. It is possible that there are simply no manifolds to align for the number of dimensions we have chosen (6) for our embeddings. 
 
 It is known that GANs do well on problems where the input data fall into specific discernible classes, and our dataset does not have this characteristic. Though there are discernible clusters, they are indistinct as befits a human taxonomy of concepts rather than visual representations of 10 digits, or works by different artists. Given this constraint, it is reasonable that a naive GAN might not work. In particular, there were different numbers of elements in the source and target domains; neither the MAGAN nor Wasserstein GAN were tested in this situation. Additionally, \cite{ImprovedTechniquesTrainingGANS} found that the ILSVRC2012 dataset with 1000 categories was a challenge for their GAN because of the large number of classes, which is already fewer than the 19996 in our Open Images dataset. Much existing GAN research has been done on generating images matching certain criteria, for which input data is plentiful (some input sets number in the millions). In addition to having a very large number of classes, we also only have one example of each, so it should be considerably more difficult to learn this distribution with a GAN. 
+
+\todo[inline]{What are the implications for multi task learning of the above? That none of the above acted as good constraints? What is the meaning of alignment - if the domains are aligned, does it mean that the problem is well constrained and the embeddings should be good? Conversely if the domains are not aligned, does this mean the problem is not well constrained? }
