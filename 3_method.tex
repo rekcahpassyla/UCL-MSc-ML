@@ -5,12 +5,12 @@
 
 Our input data comprises datasets from two modalities. 
 
-\textbf{Open Images:} The Open Images dataset \cite{openimages} collated by Google consists of approximately 7.3 million ($7337077$) annotated images tagged with concepts that occur within them. Images and concepts are given IDs. We parse the information of which concepts are present in which images to build a co-occurrence matrix of the number of times concepts occur in images. This is exactly analogous to the co-occurrence matrix used in \cite{pennington2014glove} from which GloVe embeddings are derived. The dataset also contains other annotations like bounding boxes and hierarchy, but these are not used.
+\textbf{Open Images:} The Open Images dataset \cite{openimages} collated by Google consists of approximately 7.3 million ($7337077$) annotated images tagged with concepts that occur within them. Images and concepts are given IDs. We parse the file that logs what concepts are present in which images to build a co-occurrence matrix of the number of times concepts occur in images over the whole dataset. This is exactly analogous to the co-occurrence matrix used in \cite{pennington2014glove} from which GloVe embeddings are derived. The dataset also contains other annotations like bounding boxes and hierarchy, but these are not used.
 
 \textbf{AudioSet:} The AudioSet dataset \cite{audioset} consists of $22160$ annotated sound clips, where clips are given IDs and labelled according to which concept IDs are present in them. As this dataset is also collated by Google, the label IDs are identical and the concept names are almost the same as in Open Images (a small amount of preprocessing had to be done to match them exactly). As with Open Images, a co-occurrence matrix is created from the annotation data. 
 
 In total there are $20522$ labelled concepts; $19996$ from Open Images and 526 from AudioSet, with an intersection of 230 concepts present in both datasets. 
-The concept labellings are both human- and machine-generated. They are not always accurate. For example, the image in Figure \ref{fig:tortoiseseaturtle} below has been labelled, by a human annotator, with the terms ``Tortoise" and ``Sea turtle". As these two terms represent distinct species (one land dwelling and the other sea dwelling), the tagged object cannot be both. In the case of this image it is presumably because human annotator could not determine the type of animal represented by the statue next to the woman. This pattern persists throughout the image library, where images are tagged with labels that are clearly related, but not always accurate. The images are consistently mis-labelled; the ``Tortoise" / ``Sea turtle" mismatch appears many times. For the purposes of this study this is less significant, but if we were trying to relate the relationships found by the experiments back to real-life data, it might be important. Nonetheless, the co-occurrence statistics capture the relationships that humans think exist, even if these are inaccurate. It is a philosophical point as to whether these are accurate in a different way- they capture an association that humans have for these concepts, even if that association is factually incorrect. 
+The concept labellings are both human- and machine-generated. They are not always accurate. For example, the image in Figure \ref{fig:tortoiseseaturtle} below has been labelled, by a human annotator, with the terms ``Tortoise" and ``Sea turtle". As these two terms represent distinct species (one land dwelling and the other sea dwelling), the tagged object cannot be both. In the case of this image it is presumably because the human annotator could not determine the type of animal represented by the statue next to the person. This pattern persists throughout the image library, where images are tagged with labels that are clearly related, but not always accurate. The images are consistently mis-labelled; the ``Tortoise" / ``Sea turtle" mismatch appears many times. For the purposes of this study this is less significant, but if we were trying to relate the relationships found by the experiments back to real-life data, it might be important. Nonetheless, the co-occurrence statistics capture the relationships that humans think exist, even if these are inaccurate. It is a philosophical point as to whether these are accurate in a different way- they capture an association that humans have for these concepts, even if that association is factually incorrect. 
 
 \begin{figure}[H]
 \label{fig:tortoiseseaturtle}
@@ -21,16 +21,16 @@ The concept labellings are both human- and machine-generated. They are not alway
     }
 \end{figure}
 
-In this experiment, there are no links between any concepts to any entities in the real world. The embeddings are learned completely independently of their associated labels and are numbered by the index they occur in the co-occurrence data. For example, the first index in the Open Images co-occurrence matrix is ``Sprenger's tulip", which has label \texttt{/m/0100nhbf}, but neither of these strings (the human name or the machine ID) are used anywhere in the learning system. Any meaning ascribed to relationships between embeddings must be inferred from re-mapping the indexes back to the concept names. If the algorithm generates embeddings for concepts with indexes 15268 and 5296 that are nearest neighbours in embedding space, we will not know until we perform this re-mapping that the concepts 15268 and 5296 are ``Coffee" and ``Tea" (in which case they are related), or that they are ``Sprenger's tulip" and ``Ferret" (in which case they are not related). 
+In our experiments, there are no links between any concepts and any entities in the real world. The embeddings are learned completely independently of their associated labels and are numbered by the index they occur in the co-occurrence data. For example, the first index in the Open Images co-occurrence matrix is for ``Sprenger's tulip", which has label \texttt{/m/0100nhbf}, but neither of these strings (the human name or the machine ID) are used anywhere in the learning system. Any meaning ascribed to relationships between embeddings must be inferred from re-mapping the indexes back to the concept names. If the algorithm generates embeddings for concepts with indexes 15268 and 5296 that are nearest neighbours in embedding space, we will not know until we perform this re-mapping that the concepts 15268 and 5296 are ``Coffee" and ``Tea" (in which case they are related), or that they are ``Sprenger's tulip" and ``Ferret" (in which case they are not related). 
 
 The co-occurrence matrices for the Open Images and AudioSet datasets, as well as the concept name to label mapping files, make up the dataset for these experiments. This dataset should represent the statistical distribution of co-occurrence of concepts in the two modalities. The co-occurrence for a pair was incremented by 1 if both items in the pair were present in an image or audio clip. The raw data files also contained a confidence score for the degree of certainty of the labelling, but this was not used. 
 
 \section{Embedding choice: Probabilistic GloVe}
 
-The dimension of the co-occurrence matrices is high, particularly the Open Images matrix which is 19996 by 19996 (AudioSet is a more manageable 526 by 526). However, they are extremely sparse, and this is ideal for dimensionality reduction. Since the  GloVe learning algorithm uses only the non-zero items in the co-occurrence matrix, it is a particularly efficient choice. Also, its computational complexity depends on the number of such non-zero items rather than on the size of the co-occurrence matrix. It produces reasonable clustering, where concepts that are close in embedding space are also close in semantic space. %\cite{pennington2014glove} found that the embedding space produced by this algorithm gave state-of-the-art accuracies on word analogy tests. 
+The dimension of the co-occurrence matrices is high, particularly the Open Images matrix which is 19996 by 19996 (AudioSet is a more manageable 526 by 526). However, they are extremely sparse, and thus ripe for dimensionality reduction. Since the  GloVe learning algorithm uses only the non-zero items in the co-occurrence matrix, it is a suitably efficient choice. Also, its computational complexity depends on the number of such non-zero items rather than on the size of the co-occurrence matrix. It produces reasonable clustering, where concepts that are close in embedding space are also close in semantic space. %\cite{pennington2014glove} found that the embedding space produced by this algorithm gave state-of-the-art accuracies on word analogy tests. 
 GloVe embeddings are also stable, by the metric used in \cite{WordEmbeddingStability}- the amount of overlap between nearest neighbours of an embedding for different runs. As the GloVe embedding is trained by stochastic gradient descent, the embeddings resulting from different random seeds will be different.
 
-We modify this model to be probabilistic.  The probabilistic/deterministic distinction refers not to the learning algorithm (as any algorithm trained by stochastic gradient descent will have a probabilistic component), but to the embedding representation. The original GloVe embeddings are represented by point estimates for each concept (thus a single vector for each concept); in our implementation, each probabilistic embedding represents a multivariate Gaussian distribution with independent dimensions (diagonal covariance matrix). The motivation for this is the hope that the variances learned will give us some knowledge of the degree of confidence we can have in each embedding, and also that learning two parameters for each embedding will help with alignment by providing more information for disambiguation. 
+We modify this model to be probabilistic.  The probabilistic/deterministic distinction refers not to the learning algorithm (as any algorithm trained by stochastic gradient descent will have a probabilistic component), but to the embedding representation. The original GloVe embeddings are represented by point estimates for each concept (thus a single vector for each concept); in our implementation, each probabilistic embedding represents a multivariate Gaussian distribution with independent dimensions (diagonal covariance matrix). We hope that the resulting learned variances will give us some knowledge of the degree of confidence we can have in each embedding, and also that learning two parameters for each embedding will help with alignment by providing more information for disambiguation. 
 
 A probabilistic embedding is a sample from the following distribution:
 \begin{equation*}
@@ -45,14 +45,14 @@ Both $\mu$ and $\sigma$ are learned parameters. In practice, $\sigma$ is further
 
 Therefore the full equation is:
 
-\begin{equation*}
+\begin{equation}
 \label{eq:stochemb}
     \mu + \ln (1 + \exp(\rho)) \cdot \N(0, 1)
-\end{equation*}
+\end{equation}
 
 \subsection{Implementation}
 
-The probabilistic version of the GloVe algorithm was implemented in Python using the PyTorch \cite{pytorch}, PyTorch Lightning \cite{pytorchlightning} and Pyro \cite{pyro} libraries. A custom neural network layer was implemented which took as input a co-occurrence matrix, and learned probabilistic GloVe embeddings by backpropagation through the loss function. Each mini-batch represented a random sampling of the rows and columns of the co-occurrence matrix, with all rows and columns being used over the course of one training epoch. 
+The probabilistic version of the GloVe algorithm was implemented in Python using the PyTorch \cite{pytorch}, PyTorch Lightning \cite{pytorchlightning} and Pyro \cite{pyro} libraries. A custom neural network layer was implemented which took a co-occurrence matrix as input, and learned probabilistic GloVe embeddings by backpropagation through the GloVe loss function. Each mini-batch represented a random sampling of the rows and columns of the co-occurrence matrix, with all rows and columns being used over the course of one training epoch. 
 
 The GloVe loss function from \cite{pennington2014glove} is reproduced here:
 
@@ -77,6 +77,8 @@ The Pyro library provides backpropagation through the random sampling, as descri
 
 \subsection{Validation}
 
+In this and following sections, the notation $1.234 \pm 0.56$ for an item denotes that the mean of N (usually 10) samples of the item observations is $1.234$ and the standard deviation is $0.56$. 
+
 The probabilistic embeddings were validated as follows:
 
 \begin{itemize}
@@ -100,7 +102,7 @@ It is interesting that AudioSet needed many more epochs to converge. This is con
 \subsubsection{Clustering}
 As a sanity check, the t-SNE (t-Distributed Stochastic Neighbor Embedding, \cite{tsne}) algorithm was  used to reduce the dimensionality of the embeddings from 6 to 2, and the resulting points plotted for the top 300 most frequent concepts in each domain (measured by number of occurrences in images or audio clips). As we expected, there are clearly visible concept clusters.  While t-SNE adds a further level of stochasticity during the dimensionality reduction process, two runs of t-SNE on the same input data with the same t-SNE random seed set, will produce the same result. Therefore, we can assume that the stochasticity introduced by t-SNE is accounted for. 
 
-This is a qualitative analysis only intended to confirm that the implementation is correct and converges to embeddings that have meaningful semantic relationships. This technique of using t-SNE to verify embedding quality is used in similar experiments, for example, \cite{CoocurrenceVisionLanguage2021}. 
+The intent behind this qualitative analysis is only to confirm that the implementation is correct and converges to embeddings that have meaningful semantic relationships. This technique of using t-SNE to verify embedding quality is used in similar experiments, for example, \cite{CoocurrenceVisionLanguage2021}. 
 
 \begin{figure}[H]
 \label{fig:gloveclusters}
@@ -114,6 +116,7 @@ This is a qualitative analysis only intended to confirm that the implementation 
 
 \begin{figure}[H]
     \centering
+    \label{fig:openimages1}
     \includegraphics[width=\textwidth]{images/method/probabilistic_independent/top300_tsne_audioset__ProbabilisticGlove_1.png}
     \caption{
         AudioSet top 300 most common concepts. Again there are clearly visible clusters comprising, for example, sounds made by water, sounds made by percussion instruments, and sounds made by dogs. 
@@ -121,19 +124,20 @@ This is a qualitative analysis only intended to confirm that the implementation 
     % generated by inspect_results.py 
 \end{figure}
 
-The following plots of the Open Images top 300 concepts (by frequency) t-SNE plots annotated to show some of the clusters, for random seeds 1 and 2, show that roughly the same concepts cluster for each run. They also reveal a characteristic of our alignment problem: The cluster arrangements relative to each other across runs are not consistent. Ideally, we would like the different clusters to have the same spatial arrangement across runs. As described in \cite{SHEPARD19701}, we would like to identify second order isomorphisms in the data; not just the clusters, but the relationships between the clusters. The variability from run to run suggests that the available data does not uniquely identify a single system of second-order isomorphisms. We attempt to inject additional constraints in a later section.
+The following plots of the Open Images top 300 concepts (by frequency) t-SNE plots annotated to show some of the clusters, for random seeds 1 and 2, show that roughly the same concepts cluster for each run. They also reveal a characteristic of our alignment problem: \textbf{The cluster arrangements relative to each other across runs are not consistent}. Ideally, we would like the different clusters to have the same spatial arrangement across runs. As described in \cite{SHEPARD19701}, we would like to identify second order isomorphisms in the data; not just the clusters, but the relationships between the clusters. The variability from run to run suggests that the available data does not uniquely identify a single system of second-order isomorphisms. We attempt to inject additional constraints in a later experiment.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{images/method/probabilistic_independent/top300_tsne_openimages__ProbabilisticGlove_1_clusters.png}
     \caption{
-        Coloured boxes indicate clusters 
+        Coloured boxes indicate clusters.
     }
     % generated by inspect_results.py 
 \end{figure}
 
 \begin{figure}[H]
     \centering
+    \label{fig:openimages2}
     \includegraphics[width=\textwidth]{images/method/probabilistic_independent/top300_tsne_openimages__ProbabilisticGlove_2_clusters.png}
     \caption{
         The same clusters are in different locations in embedding space compared to the previous run, and their orientation relative to each other is different; it is not a simple rotation and stretch of the clusters. Although t-SNE introduces more stochasticity, both t-SNE runs were done with the same t-SNE random seed set, which is known to generate the same output if given the same inputs. 
@@ -149,16 +153,16 @@ We also examine the learned means and variances, $\mu$ and $\sigma = \ln(1 + \ex
 This is done as follows for each domain (Open Images and AudioSet separately):
 
 \begin{itemize}
-    \item The dot products are calculated between the learned $\mu$ (the mean of the stochastic embeddings) for every pair of concepts. The stochastic embeddings can be thought of as distributions about a mean, where the mean would be the embedding learned in the deterministic case. 
-    \item This gives a similarity matrix between each embedding and itself, for each seed. 
+    \item The dot products are calculated between the learned $\mu$ (the mean of the stochastic embeddings) for every pair of concepts. The stochastic embeddings are defined as distributions about this mean, where the mean would correspond to the embedding learned in the deterministic case. 
+    \item This gives a similarity matrix between each embedding and itself, for each seed. \label{def:selfsimilarity}
     \item The correlation between the values of each run's similarity matrix with every other run was computed, and the mean value taken. A high value should indicate that over runs with different seeds, the similarity of a given pair of concepts is consistent. If a pair is similar in one run, it should be similar in another run and vice versa. 
     \item The average cross-correlation was $ 0.412 \pm 0.045$ for AudioSet and $0.590 \pm 0.049$ for OpenImages. 
-    \item The same procedure was done above, but instead of using the learned $\mu$ for every pair of concepts, 100 samples of each concept embedding were taken, and 100 similarity matrices calculated using those samples, to get a mean similarity matrix based on sampling. The same cross-correlation was computed, which yielded the values $ 0.412 \pm 0.044$ for AudioSet and $0.589 \pm 0.049$ for OpenImages (the numbers are indeed very similar). 
+    \item The same procedure was done above, but instead of using the learned $\mu$ for every pair of concepts, 100 samples of each concept embedding were taken, and 100 similarity matrices calculated using those samples, to get a mean similarity matrix based on sampling. The same cross-correlation was computed, which yielded the values $ 0.412 \pm 0.044$ for AudioSet and $0.589 \pm 0.049$ for OpenImages. This is not a typographical error; the numbers are indeed very similar. 
 % /home/petra/spond/spond/experimental/glove/results/audioset/ProbabilisticGlove/audioset_analytics.hdf5
 % /home/petra/spond/spond/experimental/glove/results/openimages/ProbabilisticGlove/openimages_analytics.hdf5
 \end{itemize}
 
-There is a reasonable correlation between the similarity of pairs between runs over both domains. The similarity between runs is higher for AudioSet; there are fewer concepts in this domain so this is expected. 
+There is a reasonable correlation between the similarity of pairs between runs over both domains. 
 
 The variances were examined by analysing the entropy of each embedding. Since each embedding is a multivariate Gaussian with a diagonal covariance matrix:
 
@@ -181,7 +185,7 @@ Distributional plots of the entropies will give us information about the algorit
     \includegraphics[width=0.45\textwidth]{images/method/probabilistic_independent/audioset_entropies.png}
     \includegraphics[width=0.45\textwidth]{images/method/probabilistic_independent/audioset_entropies_box.png}
     \caption{
-        Histograms of entropy distributions for Open Images and AudioSet embeddings. 
+        Histograms and box plots of entropy distributions for Open Images and AudioSet embeddings. 
     }
     % generated by analyse.py 
 \end{figure}
@@ -270,7 +274,7 @@ Rank / Seed &1 &2 &3 \\
 \caption{The 5 nearest neighbours to the concept ``Roti canai" in the Open Images domain, over 3 seeds. The distance metric is Euclidean distance. }
 \end{table}
 
-Embeddings constructed using Euclidean distance measures are known to be less able to represent hierarchical structures, particularly if the embedding space low-dimensional. \cite{NNAnalysisPsychologicalSpaces} found that there is quite a restrictive upper bound on the number of points with the same nearest neighbour when the points lie in Euclidean space. When there is a hierarchical semantic structure to the data, nodes that correspond to more abstract types should have many nearest neighbours. Because of this restrictive upper bound, embeddings learnt in Euclidean space are not able to capture all of these nearest neighbours. \cite{PoincareEmbeddings} describes a method of learning embeddings in hyperbolic space (with constant negative curvature) that may be better able to handle this.
+A possible explanation for this is that embeddings constructed using Euclidean distance measures are known to be less able to represent hierarchical structures, particularly if the embedding space is low-dimensional. \cite{NNAnalysisPsychologicalSpaces} found that there is quite a restrictive upper bound on the number of points with the same nearest neighbour when the points lie in Euclidean space. When there is a hierarchical semantic structure to the data, nodes that correspond to more abstract types should have many nearest neighbours, because all the child nodes (that are a subtypes of these abstract nodes) should be classed as nearest neighbours. However because of this restrictive upper bound, embeddings learnt in Euclidean space are not able to capture all of these nearest neighbours. \cite{PoincareEmbeddings} describes a method of learning embeddings in hyperbolic space (with constant negative curvature) that may be better able to handle this.
 
 The AudioSet nearest neighbours (not shown here for brevity) for concepts were generally more meaningful. This is probably because as there are only 526 concepts represented in AudioSet, there is less of a hierarchy. 
 
@@ -279,7 +283,7 @@ The AudioSet nearest neighbours (not shown here for brevity) for concepts were g
 
 \subsection{Definition of alignment for this problem}
 \label{section:alignmentdef}
-As stated in \cite{ManifoldLearningTheoryAndApplications}, the generic alignment problem involves finding a function that maps one domain to the other. This project involves simultaneously learning embeddings for both domains along with the alignment mappings. Since the GloVe algorithm involves stochastic gradient descent over a complex loss surface, it will be highly subject to local minima. Further constraining the problem by inducing alignment should help to decrease the occurrence of local minima and arrive at a better global solution. 
+As stated in \cite{ManifoldLearningTheoryAndApplications}, the generic alignment problem involves finding a function that maps one domain to the other. This project involves simultaneously learning this alignment mapping as well as embeddings for both domains.  Constraining the GloVe embedding learning problem by inducing alignment should help to decrease the occurrence of local minima and arrive at a better global solution. 
 
 We aim for the type of alignment described in Figure \ref{fig:alignment2}, learning a mapping directly from one domain to another, rather than mapping both domains to an intermediate space because at this stage, we cannot make any assumptions about the manifold that the data lie on. We used 6 dimensions based on previous heuristic analysis.  
 
@@ -293,15 +297,15 @@ The accuracy is computed after each epoch and defined as the fraction of concept
 
 \subsection{Alignment model architecture}
 
-This project only aims to prove that the principles are sound, therefore no tuning of architecture or hyperparameters was done. 
+This project is a proof of concept whose aim is to prove that certain principles are sound, therefore no tuning of architecture or hyperparameters was done. 
 
 We implement, in PyTorch, the following alignment network: 
 
 \begin{itemize}
     \item A probabilistic GloVe embedding layer representing the Open Images embeddings to be aligned (henceforth referred to as the $x$-embeddings). 
     \item A probabilistic GloVe embedding layer representing the AudioSet embeddings to be aligned (henceforth referred to as the $y$-embeddings). 
-    \item A multi-layer perceptron with 3 hidden layers of 100 nodes each, that learns a mapping from the $x$-embeddings to the $y$-embeddings: $f(x) \rightarrow y$ 
-    \item A multi-layer perceptron with 3 hidden layers of 100 nodes each, that learns a mapping from the $y$-embeddings to the $x$-embeddings: $g(y) \rightarrow x$
+    \item A multi-layer perceptron \cite{mlp} with 3 hidden layers of 100 nodes each and $tanh$ activation, that learns a mapping from the $x$-embeddings to the $y$-embeddings: $f(x) \rightarrow y$.
+    \item A multi-layer perceptron \cite{mlp} with 3 hidden layers of 100 nodes each and $tanh$ activation, that learns a mapping from the $y$-embeddings to the $x$-embeddings: $g(y) \rightarrow x$.
 \end{itemize}
 
 This particular aligner architecture has been used in previous experiments, with good results. 
@@ -314,8 +318,8 @@ The full loss function is
 \label{eq:fulllossfunction}
 \begin{split}
 L & = L_{glove, x} + L_{glove, y} + L_{cycle, x} + L_{cycle, y} \\
-  & + L_{distance, x-intersect} + L_{distance, y-intersect} \\
-  & + L_{distsim, x-intersect} + L_{distsim, y-intersect}
+  & + L_{distance, x\text{-}intersect} + L_{distance, y\text{-}intersect} \\
+  & + L_{distsim, x\text{-}intersect} + L_{distsim, y\text{-}intersect}
 \end{split}
 \end{equation}
 
@@ -324,12 +328,12 @@ where the individual components are:
 \begin{itemize}
     \item $L_{glove, x}$: The GloVe loss for $x$ as in \ref{eq:gloveloss}. 
     \item $L_{glove, y}$: The GloVe loss for $y$ as in \ref{eq:gloveloss}. 
-    \item $L_{cycle, x}$: The cycle consistency loss from x to y: $||g(f(x)) - x||_2$
-    \item $L_{cycle, y}$: The cycle consistency loss from y to x: $||f(g(y)) - y||_2$
-    \item $L_{distance, x-intersect}$: The distance loss between $f(x)$ and $y$, for only the intersection of concepts: $||f(x_{intersect}) - y_{intersect}||_2$
-    \item $L_{distance, y-intersect}$: The distance loss between $g(y)$ and $x$, for only the intersection of concepts: $||g(y_{intersect}) - x_{intersect}||_2$
-    \item $L_{distsim, x-intersect}$: An optional distributional similarity measure between $f(x_{intersect})$ and $y_{intersect}$
-    \item $L_{distsim, y-intersect}$: An optional distributional similarity measure between $g(y_{intersect})$ and $x_{intersect}$
+    \item $L_{cycle, x}$: The cycle consistency loss from x to y: $||g(f(x)) - x||_2$.
+    \item $L_{cycle, y}$: The cycle consistency loss from y to x: $||f(g(y)) - y||_2$.
+    \item $L_{distance, x\text{-}intersect}$: The distance loss between $f(x)$ and $y$, for only the intersection of concepts: $||f(x_{intersect}) - y_{intersect}||_2$.
+    \item $L_{distance, y\text{-}intersect}$: The distance loss between $g(y)$ and $x$, for only the intersection of concepts: $||g(y_{intersect}) - x_{intersect}||_2$.
+    \item $L_{distsim, x\text{-}intersect}$: An optional distributional similarity measure between $f(x_{intersect})$ and $y_{intersect}$.
+    \item $L_{distsim, y\text{-}intersect}$: An optional distributional similarity measure between $g(y_{intersect})$ and $x_{intersect}$.
 \end{itemize}
 
 and $x_{intersect}$ and $y_{intersect}$ represent the embeddings of the concepts that exist in both domains. 
@@ -340,12 +344,12 @@ For 10 random seeds, one run of the alignment model was done without MMD, then a
 
 \subsubsection{Other model parameters}
 
-The hyperparameter choices below were not cross-validated. 
+Again, because this is a proof of concept, the hyperparameter choices below were not cross-validated or tuned. 
 
 \label{section:otherparameters}
 \begin{itemize}
     \item The mini-batch size is 500.
-    \item The Adam optimiser is used with a learning rate of 0.01.
+    \item The Adam \cite{kingma2017adam} optimiser is used with a learning rate of 0.01.
     \item 10 samples of each concept embedding are taken for each mini-batch for a total of 5000 points per mini-batch. As the concept embeddings are themselves distributions, this means that we take 10 samples from each. This acts like data augmentation, and was necessary to achieve alignment of above 95\%. If only one sample was used per concept embedding, maximum alignment accuracy was only around 90\%. 
     \item Alignment accuracy is defined as follows: for $x \in x_{intersect}$, the mean number of $i$ such that nearest neighbour of $f(x_i)$ is  $y_i$. For $y \in y_{intersect}$, the mean number of $j$ such that the nearest neighbour of $g(y_j)$ is $x_j$. 
     \item The model is run for 150 epochs; the mean accuracy (over $x$ and $y$) is measured after every epoch and the model is saved if the mean accuracy is greater than the last epoch mean accuracy. Therefore, the final saved model has the embeddings that gave the greatest mean accuracy. 

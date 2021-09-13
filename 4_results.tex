@@ -5,13 +5,12 @@ In this chapter we present the results of semi-supervised learning of jointly al
 
 \section{Summary}
 \begin{itemize}
-    \item Alignment accuracies of greater than 95\% were achieved for both domains ($f(x) \rightarrow y$ and $g(y) \rightarrow x$).
+    \item Alignment accuracies of greater than 95\% were achieved for both domains ($f(x) \rightarrow y$ and $g(y) \rightarrow x$). If the domain embeddings are aligned, it means that our multi-task learning problem is well constrained. 
     \item Visualisation of the jointly aligned embeddings through t-SNE dimensionality reduction showed good clustering behaviour with semantically meaningful clusters.
-    \item Aligned embeddings were found to be of higher quality compared to independently learned embeddings, when using a similarity metric based on the WordNet lexical database. Specific definitions of ``quality" and ``similarity" are given in a later section.
-    \item Aligned embeddings were found to be less stable compared to independently learned embeddings. 
+    \item \textbf{Aligned embeddings were found to be of higher quality compared to independently learned embeddings, when using a similarity metric based on the WordNet lexical database.} The specific definitions of similarity and quality are described in Sections \ref{section:similarity} and \ref{section:quality}.
+    \item Aligned embeddings were found to be less stable compared to independently learned embeddings. The definition of stability is described in Section \ref{section:stability}.
     \item The MMD metric increased alignment accuracy, but sometimes decreased embedding quality. 
 \end{itemize}
-
 
 \section{Visualising clusters}
 Similar to what was done with the independently learned embeddings, we run the t-SNE algorithm on the aligned embeddings for both domains, and plot the results.
@@ -55,14 +54,18 @@ In Figures \ref{fig:openimageszoom} and \ref{fig:audiosetzoom} below, we show so
     \caption{\label{fig:audiosetzoom}Enlarged view of two regions of the AudioSet t-SNE plot showing the same phenomenon as described above.}
 \end{figure}
 
-
+\newpage
 \section{Statistics}
 
-\subsection{Correlations}
 
-We examine the correlations of self-similarity matrices over different random seeds, to get an idea of how consistent each set of embeddings is with itself. The similarity matrix of the embeddings for a given run is like a ``signature" of how the different concepts relate to each other within that run. We would like a high correlation of similarity matrices between runs, because that tells us that the algorithm is producing stable embeddings where concepts have the same degree of similarity with other concepts over many runs. 
+In this and following sections, the notation $1.234 \pm 0.56$ for an item denotes that the mean of N (usually 10) samples of the items' observations is $1.234$ and the standard deviation is $0.56$.
 
-\subsubsection{Average (Pearson) cross-correlation of self-similarity matrices of embedding means}
+
+\subsection{Similarity and correlations}
+\label{section:similarity}
+We examine the correlations of self-similarity matrices (as described in Section \ref{def:selfsimilarity}) over different random seeds, to get an idea of how consistent each set of embeddings is with itself. The similarity matrix of the embeddings for a given run is like a ``signature" of how the different concepts relate to each other within that run. We would like a high correlation of similarity matrices between runs, because that tells us that the algorithm is producing stable embeddings where concepts have the same degree of similarity with other concepts over many runs. 
+
+\subsubsection{Pearson cross-correlation of self-similarity matrices of embedding means}
 
 \begin{table}[H]
 \centering
@@ -75,10 +78,10 @@ Open Images    & 0.590 $\pm$ 0.049 & 0.474 $\pm$ 0.044 &     0.420 $\pm$  0.040 
 AudioSet    & 0.412 $\pm$ 0.045 &  0.399 $\pm$ 0.044  &      0.346  $\pm$ 0.043  \\
 \bottomrule
 \end{tabular}
-\caption{\label{table:corrmeans}The similarity measure used for this table is the dot product of the means of the embeddings. The average is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10).}
+\caption{\label{table:corrmeans}The mean and standard deviation of Pearson correlation of self-similarity matrices with themselves, taken over 10 random seeds. The similarity measure used for this table is the dot product of the means of the embeddings ($\mu$ in Equation \ref{eq:stochemb}). The mean is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10).}
 \end{table}
 
-\subsubsection{Average (Pearson) cross-correlation of self-similarity matrices of samples of embeddings}
+\subsubsection{Pearson cross-correlation of self-similarity matrices of samples of embeddings}
 \begin{table}[H]
 \centering
 \begin{tabular}{lrrr}
@@ -90,12 +93,14 @@ Open Images    & 0.589 $\pm$ 0.049 & 0.480 $\pm$ 0.040 &     0.434 $\pm$  0.040 
 AudioSet    & 0.412 $\pm$ 0.044 &  0.399 $\pm$ 0.044  &      0.346  $\pm$ 0.043  \\
 \bottomrule
 \end{tabular}
-\caption{\label{table:corrsamples}The similarity measure used for this table is mean of the dot product of 100 samples of each embedding (100 samples are taken, the pairwise dot product similarity computed, and the mean of those 100 similarity matrices is taken). This measure was used to take into account the variance of the embeddings, where the previous table used only the learned means of the embeddings. The average is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10). It is not a typographical error that the values for AudioSet for mean of 100 similarity matrices are the same as the values for the embedding means in the previous table. }
+\caption{\label{table:corrsamples}The mean and standard deviation of Pearson correlation of self-similarity matrices with themselves, taken over 10 random seeds. The similarity measure used for this table is the mean of 100 sampled dot product similarity matrices (100 samples are taken, the pairwise dot product similarity computed, and the mean of those 100 similarity matrices is taken). This measure was used to take into account the variance of the embeddings, where the previous table used only the learned means of the embeddings. The average is taken over all combinations of random seeds (1x2, 1x3, ..., 9x10). It is not a typographical error that the values for AudioSet for mean of 100 similarity matrices are the same as the values for the embedding means in the previous table. }
 \end{table}
 
 The runs of the independently learned embeddings are more correlated with each other, compared to the equivalent calculation with the aligned embeddings. This means that the similarity matrices (of each run's embeddings with itself) are more consistent across runs. This correlation has dropped in the aligned runs, indicating that the output embeddings are less similar to themselves across runs. We can say that the alignment introduces more variation in the embeddings. MMD in particular seems to introduce more variability. 
 
-\subsubsection{Mean Spearman correlation of entropy with frequency of occurrence}
+\subsubsection{Spearman correlation of entropy with frequency of occurrence}
+For the independently learned embeddings, we observe a slight negative Spearman correlation of the learned entropy of a concept's embeddings with the frequency of occurrence of that concept. Entropies of less frequently occurring concepts are found to be higher, which is intuitively sensible; there is less information about those concepts so we would expect the variance, and therefore the entropy, to be higher. 
+
 \begin{table}[H]
 \centering
 \begin{tabular}{lrrr}
@@ -106,14 +111,13 @@ The runs of the independently learned embeddings are more correlated with each o
 Open Images    &  -0.179 $\pm$ 0.011 & 0.0421 $\pm$ 0.019 &     0.0362 $\pm$  0.012 \\
 AudioSet    &  -0.400 $\pm$ 0.041 & -0.000539 $\pm$   0.074 &      0.0359  $\pm$ 0.026  \\
 \bottomrule
-\end{tabular}\\
+\end{tabular}
+\caption{\label{table:entropiescorr} The mean and standard deviation of Spearman correlation of entropy with frequency of occurrence, taken over 10 random seeds.}
 \end{table}
-There is a slight negative Spearman correlation between the entropy of a concept and its frequency of occurrence, in the independently learned cases. Entropies of less frequently occurring concepts are found to be higher, which is intuitively sensible; there is less information about those concepts so we would expect the variance, and therefore the entropy, to be higher. 
 
-This correlation has largely disappeared in the aligned cases, being roughly around zero, indicating that there is now no relationship between the variance of the learned embedding for a concept and the frequency of that concept in the dataset. In this respect, the aligned probabilistic embeddings are less informative than the independent probabilistic ones. 
+This correlation has largely disappeared in the aligned cases, being roughly around zero, indicating that there is now no relationship between the variance of the learned embedding for a concept and the frequency of that concept in the dataset. In this respect, the variances of the aligned probabilistic embeddings are less informative than the variances of the independent probabilistic embeddings. 
+
 \subsection{Entropy plots of aligned embeddings}
-
-\todo[inline]{I think the absolute positions of the entropy distributions for each run are not significant eg. comparing independent / aligned / aligned + MMD for seed = 1 is not relevant. I think it is the comparison of the distributions across all runs that is significant eg. independent for all seeds, aligned for all seeds, etc. }
 
 \subsubsection{Open Images}
 
@@ -126,8 +130,6 @@ This correlation has largely disappeared in the aligned cases, being roughly aro
 
 \subsubsection{AudioSet}
 
-\todo[inline]{Does it mean anything that the aligned entropies are all lower in value (more negative) than aligned + MMD and independent? See above note on the relative comparisons per seed}
-
 \begin{figure}[H]
 \label{fig:entropyviolinaudio}
 \centering
@@ -135,8 +137,9 @@ This correlation has largely disappeared in the aligned cases, being roughly aro
 \caption{Violin plots of entropy distributions for independent embeddings, aligned without MMD and aligned with MMD. The aligned embeddings, whether run with or without MMD, show a bimodal entropy distribution and much greater variability than that of the independent embeddings.  These results are consistent with the self-similarity correlations between runs shown in Tables \ref{table:corrmeans} and \ref{table:corrsamples}, which also indicated that the aligned embeddings were more unstable over different runs. }
 \end{figure}
 
+\newpage
 \section{Alignment accuracy and embedding quality}
-
+\label{section:quality}
 The table below shows the alignment accuracy for both domains, over 10 random seeds. Using the MMD statistic as a component of the loss marginally increased the accuracy. 
 
 \begin{table}[H]
@@ -163,6 +166,7 @@ The table below shows the alignment accuracy for both domains, over 10 random se
 mean &       0.9543 &        0.9613 &   0.9583 &  0.9704  \\
 \bottomrule
 \end{tabular}
+\caption{The alignment accuracy for each run of the models for both domains, with and without MMD.}
 \end{table}
 
 High alignment accuracy between embeddings in both domains does not necessarily mean the embeddings are good. Figure \ref{fig:dysfunctional_clusters} below is a t-SNE plot of aligned embeddings (reduced to 2 dimensions) of very high accuracy (97\%), meaning that the embeddings in Open Images and AudioSet are well aligned. However, the actual embeddings did not form good clusters; concepts that were related semantically tended not to be close in embedding space. 
@@ -176,6 +180,7 @@ High alignment accuracy between embeddings in both domains does not necessarily 
     }
 \end{figure}
 
+\newpage
 Hence, alignment accuracy is insufficient as a metric. We can also examine the average Pearson correlations of the similarity matrices of the aligned and independent embeddings over 10 random seeds, for the two model variants: 
 
 %inspect_results.py function aligned_vs_ind_corrs
@@ -191,6 +196,7 @@ Hence, alignment accuracy is insufficient as a metric. We can also examine the a
 0.532 \pm 0.035 &   0.465 \pm 0.038 &   0.334 \pm 0.036 &  0.331 \pm 0.038  \\
 \bottomrule
 \end{tabular}
+\caption{The mean and standard deviation of the Pearson correlation of the self-similarity matrices of aligned and independent matrices, over 10 random seeds. }
 \end{table}
 
 The above are aggregate statistics that only tell us that there is a positive correlation between the similarities of the aligned and independent embeddings. We do not know if the aligned embeddings are actually semantically more meaningful than the independent, or the other way around. 
@@ -201,7 +207,7 @@ A plausible measure of embedding quality would be a comparison of the similarity
 
 \textbf{MTURK-771}: The MTURK-771 dataset was created by the authors of \cite{mturk771}, a study in learning the relatedness of word pairs. The predictions are tested by comparing the Spearman correlation of its predictions with human judgements. The MTURK-771 dataset comprises 771 pairs of words with human-rated similarity scores, collected using the Amazon Mechanical Turk tool. The intersection of the 771 word pairs with our Open Images and AudioSet concepts was small - 171 (0.013\%)  for Open Images and only 3 (0.0071\%) for AudioSet. 
 
-\textbf{WordNet}: The WordNet \cite{WordNet} lexical database contains English nouns, verbs and adjectives grouped according to synonymy (semantic similarity) and hypernymy/hyponymy (hierarchy). Words are represented by ``synsets" which denote a particular sense of the word (for example, ``orange" may refer to the colour or the fruit). Therefore, one word may map to several synsets. The relationships between word senses were hand-encoded from various corpora and thesauri, which themselves were human-curated; therefore, we consider the lexical and semantic information contained within WordNet to be an appropriate representation of human judgement. The WordNet database can be accessed directly from the \texttt{nltk} Python package. 
+\textbf{WordNet}: The WordNet \cite{WordNet} lexical database contains English nouns, verbs and adjectives grouped according to synonymy (semantic similarity) and hypernymy/hyponymy (hierarchy). Words are represented by ``synsets" which denote a particular sense of the word (for example, ``orange" may refer to the colour or the fruit). Therefore, one word may map to several synsets. The relationships between word senses were hand-encoded from various corpora and thesauri, which themselves were human-curated; therefore, we consider the lexical and semantic information contained within WordNet to be an appropriate representation of human judgement. We accessed the WordNet database through the \texttt{nltk} Python package. 
 
 There is a substantial overlap between pairs of words found in WordNet and pairs of concepts from our dataset.  Out of approximately 128 million (128005400) nonzero pairs occurring in Open Images, approximately 27 million (27052350, 21.1\%) are also present in WordNet. Out of 42002 nonzero pairs in AudioSet, 19208 (45.7\%) are also present in WordNet. 
 
@@ -217,7 +223,7 @@ s_{ij} = \frac{\vece_i \cdot \vece_j}{||\vece_i||_2 \medspace ||\vece_j||_2}
 
 where $\vece_i$ represents the $i$-th embedding.
 
-If the correlation with the human similarity dataset is higher for aligned embeddings than for independently learned embeddings, this indicates that the alignment process is adding value, resulting in more cognitively plausible embeddings. This is because it indicates that the aligned embedding pairs are in aggregate more like human judgement of similarity than the independent embedding pairs. We will use this as a metric for embedding quality, where higher quality means more similar to human judgement.  We evaluate the model variants with and without MMD by this metric to assess the effect of MMD. 
+\textbf{If the correlation with the human similarity dataset is higher for aligned embeddings than for independently learned embeddings, this indicates that the alignment process is adding value, resulting in more cognitively plausible embeddings.} This is because it indicates that the aligned embedding pairs are in aggregate more like human judgement of similarity than the independent embedding pairs. We will use this as a metric for embedding quality, where higher quality means more similar to human judgement.  We evaluate the model variants with and without MMD using this metric to assess the effect of MMD. 
 
 The MTURK-771 and enhanced ILSVRC datasets are pre-existing mappings of concept pairs to similarity values, which can be used without any preprocessing. There is no such WordNet dataset of direct similarity, so we have to construct one. WordNet makes available similarity measures between synsets that can be computed directly from the Python library. We choose the Leacock-Chodorow (LCH) similarity measure \cite{LeacockChodorow}, which takes the shortest path between the two synsets, scaled by the maximum depth from the top of the taxonomy tree of the two synsets (this measure was chosen as it is the only one that combines path length between nodes and depth of the tree).  
 
@@ -236,7 +242,7 @@ As a single word or phrase may map to several synsets, and we have no sense info
 
 \subsubsection{Degree of overlap of human similarity datasets with domain pairs}
 
-These are the percentages of data overlap for the different domains:
+These are the percentages of data overlap for the different domains. WordNet is the dataset with the largest overlap. 
 
 \begin{table}[H]
 \centering
@@ -249,6 +255,7 @@ WordNet    &     21.1\% &  45.7\%  \\
 enhanced ILSVRC    &    0.115\% &  0.221\% \\
 \bottomrule
 \end{tabular}
+\caption{The proportion of pairs of concepts that overlap between domains (in columns) and human similarity datasets (in rows).}
 \end{table}
 
 \subsubsection{Open Images, Spearman correlation with human similarity metrics}
@@ -277,10 +284,12 @@ enhanced ILSVRC    &    0.115\% &  0.221\% \\
 mean &     0.355 &  0.291 &   0.283 &     0.205 &  0.228 &    0.231 &   0.514 &  0.476 &  0.458  \\
 \bottomrule
 \end{tabular}
+\caption{The mean Spearman correlation of the human-judged similarity measure, and cosine similarity of pairs between embeddings (for different model variants: independent, aligned without MMD and aligned with MMD). Results are shown for each random seed. The mean for each seed is taken over all pairs of concepts present in both the embeddings and the human similarity dataset. The mean correlation (bottom row) is taken over all seeds. }
 \end{table}
 
-\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and independently learned embeddings}
+%\subsubsection{Open Images, differences of Spearman correlation between aligned model variant and independently learned embeddings}
 
+To present a different view, we use the Spearman correlation of the independently aligned embedding pair similarity and the human similarity dataset as a baseline. We then subtract this from the model variant embedding pair similarity correlation, to get an idea if the model variant adds value by increasing the correlation (making the resulting embeddings more similar with human judgement than the independently learned embeddings). 
 
 \begin{table}[H]
 \centering
@@ -307,21 +316,21 @@ mean &     0.355 &  0.291 &   0.283 &     0.205 &  0.228 &    0.231 &   0.514 & 
 mean &     -0.0641 &    -0.0716  &   0.0230 &     0.0256 &    -0.0373 &    -0.0562   \\
 \bottomrule
 \end{tabular}
+\caption{The differences between Spearman correlations of similarity of aligned model variants with human similarity, and the equivalent for independently learned embeddings.}
 \end{table}
 
+For Open Images, using the WordNet comparison metric, the aligned embeddings are more correlated with human similarity than the independently learned embeddings, as the mean Spearman correlation of embedding pairwise cosine similarity with WordNet similarity is greater for aligned embeddings than for independent embeddings. 
 
-For Open Images, using the WordNet comparison metric, the aligned embeddings are more correlated with human similarity than the independently learned embeddings, as the mean Spearman correlation of alignment pairwise cosine similarity with WordNet similarity is greater for aligned embeddings than for independent embeddings. 
-
-The reverse is observed with the MTURK-771 comparison metric, but we do note that this is a very small dataset of only 170 pairs present in both Open Images (out of 120 million pairs) and MTURK-771. The same phenomenon as with MTURK-771 is also observed when comparing with the ILSVRC metric, where the aligned embeddings are less correlated with human judgement than the independently learned embeddings degree of correlation with human judgement. 
+The reverse is observed with the MTURK-771 comparison metric, but we do note that this is a very small dataset of only 170 pairs present in both Open Images (out of 120 million pairs) and MTURK-771. The same phenomenon as with MTURK-771 is also observed when comparing with the ILSVRC metric, where the aligned embeddings are less correlated with human judgement than the independently learned embeddings' correlation with human judgement. 
 
 However, the ILSVRC dataset is unbalanced, and some of the choices of included concepts are strange. There are 1000 concepts present in it, of which 124 are different breeds of dog. In fact, 398 of the concepts present in the ILSVRC are different types of animal. There are some concepts in the selected 1000 that almost certainly are not amongst the most common humanly known concepts, for example, ``shoji"\footnote{A Japanese sliding door made of paper.} and ``bicycle-built-for-two" (with ``bicycle" not present). The only flowers present are ``cardoon" \footnote{A type of thistle.}, ``daisy" and ``yellow lady's slipper". In short, the concepts represented in the ILSVRC dataset do not appear to be a very good sample of human concepts. To investigate whether the imbalance of the dataset was affecting results, runs were tried of the ILSVRC dataset excluding all the animals and then only including animals, but the results were broadly the same. 
 
-\textbf{Given that the overlap of WordNet pairs with our domain pairs is considerable (21.1\% for Open Images and 45.7\% for AudioSet), we think that the higher correlation with WordNet similarity for aligned Open Images embeddings constitutes evidence that embedding quality is improved by alignment.} This would be consistent with hypotheses that multi-task learning adds value by producing a model that generalises better.
+\textbf{Given that the overlap of WordNet pairs with our domain pairs is considerable (21.1\% for Open Images and 45.7\% for AudioSet), we think that the higher correlation with WordNet similarity for aligned Open Images embeddings constitutes evidence that embedding quality is improved by alignment.} This would be consistent with hypotheses that multi-task learning adds value by producing a model that generalises better. While the AudioSet concept universe is not large, there are still 200+ concepts that are not present in Open Images that provide the GloVe algorithm with more information than would otherwise be present in the independently learned case. 
 
 However, playing devil's advocate, we do also point out that the WordNet similarity score is an artificial score inferred from properties of the WordNet database, whereas the MTURK-771 and  ILSVRC similarity measures are directly collected from humans. 
 
 Using the MMD as a component of the loss appears to increase accuracy, as well as alignment quality as measured against the WordNet metric. If comparing to the MTURK-771 and ILSVRC datasets, using MMD appears to decrease the alignment quality.  
-
+\newpage
 \subsubsection{AudioSet, Spearman correlation with human similarity metrics}
 
 MTURK-771 is excluded from this comparison, as with only 3 pairs present in both MTURK-771 and AudioSet, no meaningful results could be obtained. 
@@ -350,12 +359,10 @@ MTURK-771 is excluded from this comparison, as with only 3 pairs present in both
 mean &    0.142 &  0.152 &   0.151 &   0.584 &  0.620 &   0.611   \\
 \bottomrule
 \end{tabular}
+\caption{The mean Spearman correlation of the human-judged similarity measure, and cosine similarity of pairs between embeddings (for different model variants: independent, aligned without MMD and aligned with MMD). Results are shown for each random seed. The mean for each seed is taken over all pairs of concepts present in both the embeddings and the human similarity dataset. The mean correlation (bottom row) is taken over all seeds. }
 \end{table}
 
-
-
-\subsubsection{AudioSet, differences of Spearman correlation between aligned model variant and independently learned embeddings}
-
+Analogous to what is done with Open Images, we use the  Spearman correlation of the independently aligned embedding pair similarity and the human similarity dataset as a baseline, to evaluate if the model variant adds value by making the resulting embeddings more similar with human judgement than the independently learned embeddings. 
 
 \begin{table}[H]
 \centering
@@ -381,20 +388,21 @@ mean &    0.142 &  0.152 &   0.151 &   0.584 &  0.620 &   0.611   \\
 mean &    0.00964 &     0.00844 &   0.0361 &     0.0267  \\
 \bottomrule
 \end{tabular}
+\caption{The differences between Spearman correlations of similarity of aligned model variants with human similarity, and the equivalent for independently learned embeddings.}
 \end{table}
 
-\textbf{When compared with both WordNet and ILSVRC, AudioSet aligned embeddings are more correlated with human similarity judgement than the independently learned embeddings.}  However, only 93 pairs present in AudioSet overlap with ILSVRC pairs, so this is not a large sample for comparison. It is also subject to the vagaries of the ILSVRC dataset concept choice, as discussed in the previous section. We observe an asymmetry, where Open Images improves AudioSet with respect to ILSVRC, but AudioSet does not improve Open Images, which could be due to the fact that there are nearly 40 times as many concepts in Open Images than AudioSet, so there is simply much more information there to assist with alignment of AudioSet than there is in the other direction. 
+\textbf{When compared with both WordNet and ILSVRC, AudioSet aligned embeddings are more correlated with human similarity judgement than the independently learned embeddings.}  However, only 93 pairs present in AudioSet overlap with ILSVRC pairs, so this is not a large sample for comparison. It is also subject to the vagaries of the ILSVRC dataset concept choice, as discussed in the previous section. We observe an asymmetry, where Open Images improves AudioSet with respect to ILSVRC, but AudioSet does not improve Open Images. This could be because there are nearly 40 times as many concepts in Open Images than AudioSet, so there is simply much more information there to assist with alignment of AudioSet than there is in the other direction. 
 
 Similar to Open Images, including MMD in the loss function increases accuracy, but it slightly decreases alignment quality when compared to independently learned embeddings using both WordNet and ILSVRC metrics.
 
-\subsection{Overall results}
-\textbf{When compared with WordNet similarity, both domains' aligned embeddings showed more correlation with human similarity judgement than the equivalent independently learned embeddings. This is some evidence to show that the information gained from learning both domains simultaneously results in both domains' embeddings being of higher quality.} 
+\subsection{Overall results of similarity comparison}
+\textbf{When compared with WordNet similarity, both domains' aligned embeddings showed more correlation with human similarity judgement than the equivalent independently learned embeddings. This is some evidence to show that the information gained from learning both domains simultaneously results in both domains' embeddings being of higher quality.} In particular, the embedding quality was improved for the smaller domain AudioSet. 
  
 This is consistent with our hypothesis that constraining the embedding learning problem for both domains by adding alignment would allow each domain to act as an inductive bias for the other, leading to a better global solution. This also matches the multi-task learning research showing that learning from multiple sources results in models that generalise better.
 
 
 \subsection{Embedding stability}
-
+\label{section:stability}
 Another metric of embedding quality is their stability over multiple runs. As previously mentioned, the stochasticity in the GloVe embedding training means that different embeddings are produced for different runs, corresponding to different local minima. The structures of these are not the same from run to run, as we saw in a table of the top 5 nearest neighbours for various concepts, over different random seeds (Tables \ref{table:cat}, \ref{table:subclasscat}). 
 
 We use two measures of stability; one is the metric mentioned in \cite{WordEmbeddingStability}, a simple count of the number of intersecting concepts in the 5 nearest neighbours of any concept, over 10 seeds (divided by 5 to normalise to 1). We also define an alternate similarity metric which is easier to plot and visualise as follows:
@@ -402,12 +410,12 @@ We use two measures of stability; one is the metric mentioned in \cite{WordEmbed
 \begin{itemize}
     \item Measure the size of the union of all the top 5 nearest neighbours of a concept, by Euclidean distance, for 10 random seeds. Let this be $C$. 
     \item Take the mean of $5/C$ for the top 300 concepts in Open Images and Audioset.
-    \item If the embeddings were very stable, then the top 5 nearest neighbours of a concept over all runs should be the same, and the stability will be 1. If they are very unstable, the top 5 nearest neighbours will be different with each run, and the stability will be a small number. 
+    \item If the embeddings are very stable, then the top 5 nearest neighbours of a concept over all runs should be the same, and the stability will be 1. If they are very unstable, the top 5 nearest neighbours will be different with each run, and the stability will be a small number. 
 \end{itemize}
 
 \subsubsection{Mean stability of embeddings by model variant}
 
-Empirically, alignment appears to decrease stability of the embeddings, meaning that the nearest neighbours of a particular concept (measured by Euclidean distance) tend to change more over different random seeds. Intuitively this is reasonable. Training aligned probabilistic embeddings involves more variables and a more complex loss function, so we might expect the variances to be greater. 
+Empirically, alignment appears to decrease stability of the embeddings, meaning that the nearest neighbours of a particular concept (measured by Euclidean distance) tend to change more over different random seeds. Intuitively, this is reasonable. Training aligned probabilistic embeddings involves more variables and a more complex loss function, so we could expect the variances to be greater. 
 
 \begin{table}[H]
 \centering
@@ -425,42 +433,45 @@ Aligned & Without MMD   & Open Images &  0.2373 & 0.0733\\
 Independent & N/A   & Open Images &  0.2900 & 0.1013 \\
                    &     & AudioSet &  0.3901 & 0.3311 \\
 \bottomrule
-\end{tabular}\\
+\end{tabular}
+\caption{The mean stability by both metrics for all model variants, over both domains. The stability is measured for the top 300 most frequent concepts in each domain.}
 \end{table}
 
 \subsubsection{Plots of stability by relative frequency}
 
-The per-item plots very clearly show that alignment decreases the stability of the embeddings, as seen from the distribution of the stability values per rank of concept frequency. For the independently learned embeddings, some concepts have a stability of 1.0 which means that over 10 random seeds, the 5 nearest neighbours of those concepts did not change over all runs. The aligned embeddings do not have any concepts with a stability of 1.0. 
+The per-item plots show very clearly that alignment decreases the stability of the embeddings, as seen from the distribution of the stability values per rank of concept frequency. For the independently learned embeddings, some concepts have a stability of 1.0 which means that over 10 random seeds, the 5 nearest neighbours of those concepts did not change over all runs. The aligned embeddings do not have any concepts with a stability of 1.0. 
 
 \cite{WordEmbeddingStability} ran stability analysis for word embeddings across languages. They found that languages with higher morphological complexity tended to be less stable than languages with less complex morphology. The morphological complexity of a language depends on the relationships between the words in that language; more complex relationships means a higher morphological complexity \cite{MorphologicalComplexity}. If we draw a parallel between the combined (AudioSet + Open Images) embeddings and language, it can be suggested that the combined embeddings have more complex relationships, so we would expect them to be less stable. 
+
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth]{images/results/audioset_stability.png}
     \includegraphics[width=0.45\textwidth]{images/results/audioset_stability_ixn.png}
     \caption{
-        Stability of model variants for AudioSet. y-axis is relative frequency of concepts (most frequent = 0)
+        Stability of model variants for AudioSet. The y-axis is relative frequency of concepts (most frequent = 0). For embeddings in this domain produced by all model variants, there is a clear correlation between the relative frequency of a concept and the stability (however this effect is less pronounced for the aligned embeddings). Less frequent concepts are less stable. 
     }
 \end{figure}
-
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth]{images/results/openimages_stability.png}
     \includegraphics[width=0.45\textwidth]{images/results/openimages_stability_ixn.png}
     \caption{
-        Stability of model variants for Open Images. y-axis is relative frequency of concepts (most frequent = 0)
+        Stability of model variants for Open Images. The y-axis is relative frequency of concepts (most frequent = 0). There is not such a clear correlation between the relative frequency of a concept and the stability of its embedding, even for the independently learned embeddings. 
     }
 \end{figure}
+
+
 
 \subsection{Other findings}
 \subsubsection{The role of MMD}
 
-Using MMD as a loss function has the effect of forcing $f(x)$ and $y$ to have the same distribution, and  $g(y)$ and $x$ to have the same distribution. Therefore it is reasonable that it should have a positive effect on alignment accuracy. However if the weighting of the MMD loss is high relative to glove loss, there is more pressure for distribution  matching but less pressure for good embeddings which can result in dysfunctional embeddings where all the concepts in the intersection are clustered together as shown in Figure \ref{fig:dysfunctional_clusters}. 
+Using MMD as a loss function has the effect of forcing $f(x)$ and $y$ to have the same distribution, and  $g(y)$ and $x$ to have the same distribution. Therefore it is reasonable that it should have a positive effect on alignment accuracy. However if the weighting of the MMD loss is high relative to glove loss, there is more pressure for distribution  matching but less pressure for good embeddings which can result in dysfunctional embeddings where all the concepts in the intersection are clustered together without regard for semantic similarity as shown in Figure \ref{fig:dysfunctional_clusters}. 
 
 \subsubsection{Entropies and variances}
 
-The entropies no longer correlate negatively with frequency of concepts, in the aligned embeddings. It is more appropriate to say they are now close to independent of the frequency of concepts, since the correlation is near zero. 
+As seen in Table \ref{table:entropiescorr}, the entropies no longer correlate negatively with frequency of concepts, in the aligned embeddings. It is more appropriate to say they are now close to independent of the frequency of concepts, since the correlation is near zero. 
 
 \subsubsection{GloVe loss scaling}
 If the GloVe loss was not scaled by the ratio of concepts (see Section \ref{section:gloveloss}), the effect of this was to cause the (intersecting) concepts in the embedding to exhibit poor semantic organization.

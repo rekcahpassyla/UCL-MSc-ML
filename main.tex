@@ -45,8 +45,9 @@ citestyle=alphabetic]{biblatex}
 {{\Huge Semi-supervised Learning Of Jointly Aligned Concept Embeddings}}\\
 %{\large There Is No Optional Subtitle Yet}\\
 		}
-\date{Submission date: Day Month Year}
-\author{Petra Chong\thanks{
+\date{Submission date: 13 September 2021}
+%\author{Petra Chong\thanks{
+\author{Candidate number: LNGT0\thanks{
 {\bf Disclaimer:}
 This report is submitted as part requirement for the MSc in Machine Learning at UCL. It is
 substantially the result of my own work except where explicitly indicated in the text.
@@ -54,15 +55,17 @@ The report may be freely copied and distributed provided the source is explicitl
 }
 \\ \\
 MSc Machine Learning\\ \\
-Supervised by: Professor Bradley Love and D.r Brett Roads}
+Supervised by: Professor Bradley Love and Dr. Brett Roads}
 
  
 \onehalfspacing
 \maketitle
 \begin{abstract}
-We are interested in algorithms that learn like humans. Humans are natural multimodal learners, applying knowledge and skills gained from one task to many other tasks. Studies in multi-task machine learning conclude that this approach of learning from multiple input streams results in computer models that generalise better. We test this by simultaneously learning probabilistic embeddings of concepts for two domains- images and audio- from co-occurrence statistics of concepts in the Open Images and AudioSet datasets. We constrain the problem by inducing alignment during the learning process using the labels present in both datasets as semi-supervised input, resulting in the embeddings for both domains, and the alignment between them, being learned jointly. The intent is that the extra constraint should regularise the problem, reducing the chance of being stuck in local minima as is a known issue with learning of embeddings.  
+We are interested in algorithms that learn like humans. Humans are natural multimodal learners, applying knowledge and skills gained from one task to many other tasks. Studies in multi-task machine learning conclude that this approach of learning from multiple input streams results in computer models that generalise better. We test this by simultaneously learning probabilistic embeddings of concepts for two domains - images and audio - from co-occurrence statistics of concepts in the Open Images and AudioSet datasets. 
 
-We compare the cosine similarity of concept pairs from our aligned embeddings with the similarity of pairs from three human-curated datasets containing human similarity judgement (WordNet, enhanced ILSVRC and MTURK-771), as a measure of embedding quality. We find that semi-supervised alignment increases embedding quality of both domains when compared with WordNet, the largest of these human-curated datasets. In particular, the embedding quality of the smaller domain (AudioSet) is increased. 
+Alignment between domains is defined as knowing the mapping from one domain's embeddings to another; thus we further constrain the problem by inducing alignment during the learning process using the labels present in both datasets as semi-supervised input. The embeddings for both domains, as well as the alignment between them, are learned jointly. The extra constraint should reduce the hypothesis space, decreasing the chance of being stuck in local minima as is a known issue with learning of embeddings. The Maximum Mean Discrepancy statistic is also investigated as a means for increasing alignment.  
+
+As a measure of embedding quality, we compare the cosine similarity of concept pairs from our aligned embeddings with the similarity of pairs from three human-curated datasets containing human similarity judgement (WordNet, enhanced ILSVRC and MTURK-771). We find that semi-supervised alignment increases embedding quality of both domains when compared with WordNet, the largest of these human-curated datasets. In particular, the embedding quality of the smaller domain (AudioSet) is increased. 
 \end{abstract}
 
 \input{ack.tex}
